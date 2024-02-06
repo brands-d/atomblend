@@ -1,16 +1,17 @@
 version: 2
 
 sphinx:
-  configuration: docs/conf.py
+  configuration: docs/source/conf.py
 
 formats:
    - pdf
-
-python:
-  os: "ubuntu-22.04"
-  version: 3.8
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
+   - html
+   
+build:
+  python:
+    version: 3.8
+    install:
+      - method: pip
+        path: .
+        extra_requirements:
+          - docs
