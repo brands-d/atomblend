@@ -18,7 +18,7 @@ class MeshObject(Object):
     def scale(self, scale):
         if isinstance(scale, (int, float)):
             scale = [scale] * 3
-        self.blender_object.scale = Vector(scale)
+        self.blender_object.scale = [s * a for s, a in zip(self.scale, scale)]
 
     @property
     def material(self):

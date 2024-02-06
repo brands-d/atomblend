@@ -21,6 +21,17 @@ class Bond(MeshObject):
             degrees(acos(distance[2] / distance.length)),
             degrees(atan2(distance[1], distance[0])),
         )
-        self.scale = (0.1, 0.1, distance.length / 2)
+        self.blender_object.scale = (0.1, 0.1, distance.length / 2)
 
         self.name = f"{atom_1.name}-{atom_2.name}"
+
+    @property
+    def scale(self):
+        return list(self.blender_object.scale[:2])
+
+    @scale.setter
+    def scale(self, scale):
+        if isinstance(scale, (int, float)):
+            scale = [scale] * 2
+        scale = [s * a for s, a in zip(self.scale, scale)]
+        self.blender_object.scale = [scale[0], scale[1], self.blender_object.scale[2]]

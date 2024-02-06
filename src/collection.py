@@ -43,11 +43,12 @@ class Collection:
 
     @scale.setter
     def scale(self, scale):
-        if not isinstance(scale, (list, tuple)):
-            scale = [scale] * 3
+        # if not isinstance(scale, (list, tuple)):
+        #    scale = [scale] * 3
         for object in self.objects:
             try:
-                object.scale = [s * a for s, a in zip(object.scale, scale)]
+                object.scale = scale
+                # object.scale = [s * a for s, a in zip(object.scale, scale)]
             except Exception:
                 pass
 
@@ -162,6 +163,9 @@ class Collection:
         self._sync()
         return self
 
+    def __getitem__(self, index):
+        return self.objects[index]
+
     def move(self, translation):
         for object in self.objects:
             object.move(translation)
@@ -204,7 +208,10 @@ class Collection:
 
     def _sync(self):
         for object in self._objects:
-            if object.blender_object.name not in self.collection.objects:
+            if (
+                object.blender_object is not None
+                and object.blender_object.name not in self.collection.objects
+            ):
                 self._objects.remove(object)
 
         for object in self.collection.objects:

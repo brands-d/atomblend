@@ -38,8 +38,13 @@ class Atom(MeshObject):
 
     @classmethod
     def ase(cls, atom):
-        self = Atom(atom.symbol)
-        self.location = atom.position
+        try:
+            self = Atom(str(atom.symbols))
+            self.location = atom.positions[0]
+        except AttributeError:
+            self = Atom(str(atom.symbol))
+            self.location = atom.position
+
         return self
 
     @classmethod
@@ -87,7 +92,9 @@ class Atoms(MeshObject):
         self.collection.link(self.bonds_collection)
 
     @classmethod
-    def ase(cls, atoms, name):
+    def ase(cls, atoms, name=None):
+        if name is None:
+            name = "New Atoms"
         self = Atoms(name)
         self.unit_cell = atoms.cell[:]
         for atom in atoms:
@@ -123,6 +130,14 @@ class Atoms(MeshObject):
         return self
 
     @property
+    def atoms(self):
+        return self.atoms_collection
+
+    @property
+    def bonds(self):
+        return self.bonds_collection
+
+    @property
     def name(self):
         return self.collection.name
 
@@ -141,6 +156,42 @@ class Atoms(MeshObject):
         else:
             self._unit_cell = diag(cell)
 
+    @property
+    def scale(self):
+        return (self.atoms_collection.scale, self.bonds_collection.scale)
+
+    @scale.setter
+    def scale(self, scale):
+        self.atoms_collection.scale = scale
+        self.bonds_collection.scale = scale
+
+    @property
+    def material(self):
+        return (self.atoms_collection.material, self.bonds_collection.material)
+
+    @material.setter
+    def material(self, material):
+        self.atoms_collection.material = material
+        self.bonds_collection.material = material
+
+    @property
+    def origin(self):
+        return (self.atoms_collection.origin, self.bonds_collection.origin)
+
+    @origin.setter
+    def origin(self, origin):
+        self.atoms_collection.origin = origin
+        self.bonds_collection.origin = origin
+
+    @property
+    def location(self):
+        return (self.atoms_collection.location, self.bonds_collection.location)
+
+    @location.setter
+    def location(self, location):
+        self.atoms_collection.location = location
+        self.bonds_collection.location = location
+
     def get(self, filter=None):
         self.clean()
 
@@ -151,6 +202,14 @@ class Atoms(MeshObject):
         elif callable(filter):
             return [atom for atom in self._atoms if filter(atom)]
 
+    def move(self, translation):
+        self.atoms_collection.move(translation)
+        self.bonds_collection.move(translation)
+
+    def rotate(self, rotation, origin=None):
+        self.atoms_collection.rotate(rotation, origin)
+        self.bonds_collection.rotate(rotation, origin)
+
     def clean(self):
         for atom in self._atoms:
             if atom.blender_object is None:
@@ -158,19 +217,27 @@ class Atoms(MeshObject):
 
     def create_bonds(self, periodic=True):
         for atom_1, atom_2 in combinations(self.get("all"), 2):
-            for x, y, z in (p for p in product((-1, 0, 1), repeat=3)):
-                shift = Vector(
-                    x * self.unit_cell[0]
-                    + y * self.unit_cell[1]
-                    + z * self.unit_cell[2]
-                )
-                if (
-                    Vector(atom_1.position) - Vector(atom_2.position) - Vector(shift)
-                ).length <= 1.2 * (atom_1.covalent_radius + atom_2.covalent_radius):
-                    if (x, y, z) != (0, 0, 0) and periodic:
-                        atom_2 = _DummyAtom(atom_2)
-                        atom_2.position = Vector(atom_2.position) + shift
+            if periodic and self.unit_cell is not None:
+                for x, y, z in (p for p in product((-1, 0, 1), repeat=3)):
+                    shift = Vector(
+                        x * self.unit_cell[0]
+                        + y * self.unit_cell[1]
+                        + z * self.unit_cell[2]
+                    )
+                    if (
+                        Vector(atom_1.position)
+                        - Vector(atom_2.position)
+                        - Vector(shift)
+                    ).length <= 1.2 * (atom_1.covalent_radius + atom_2.covalent_radius):
+                        if (x, y, z) != (0, 0, 0) and periodic:
+                            atom_2 = _DummyAtom(atom_2)
+                            atom_2.position = Vector(atom_2.position) + shift
 
+                        self += Bond(atom_1, atom_2)
+            else:
+                if (Vector(atom_1.position) - Vector(atom_2.position)).length <= 1.2 * (
+                    atom_1.covalent_radius + atom_2.covalent_radius
+                ):
                     self += Bond(atom_1, atom_2)
 
     def repeat(self, repetitions):

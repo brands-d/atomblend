@@ -92,6 +92,7 @@ class Object:
             bpy.context.scene.cursor.location = previous_cursor_location
 
     def delete(self):
+        a = 1
         if self.blender_object is not None:
             bpy.data.objects.remove(self.blender_object, do_unlink=True)
             self._blender_object = None

@@ -6,11 +6,13 @@ from numpy import diag, tile
 
 from .lib import flip_normals, marching_cubes_gaussian, marching_cubes_VASP, read_cube
 from .meshobject import MeshObject
+from .collection import Collection
 
 
 class Isosurface(MeshObject):
-    def __init__(self, isosurface_object):
+    def __init__(self, isosurface_object, collection=None):
         self._isosurface_object = isosurface_object
+        self._collection = collection
         self._link()
         super().__init__()
 
@@ -49,11 +51,11 @@ class Isosurface(MeshObject):
 
     @property
     def name(self):
-        return self._isosurface_object._name
+        return self._isosurface_object.blender_object.name
 
     @name.setter
     def name(self, name):
-        self._isosurface_object._name = name
+        self._isosurface_object.blender_object.name = name
 
     def repeat(self, repetitions):
         self._isosurface_object.repetitions = repetitions
@@ -61,16 +63,28 @@ class Isosurface(MeshObject):
         self._isosurface_object.repetitions = (0, 0, 0)
 
     def update(self):
+        name = self.name
         self._unlink()
         self.blender_object = self._isosurface_object._create_mesh()
         self._link()
+        self.name = name
 
     def _unlink(self):
-        bpy.data.collections["Collection"].objects.unlink(self.blender_object)
+        if self._collection is not None:
+            bpy.data.collections[self._collection.name].objects.unlink(
+                self.blender_object
+            )
+        else:
+            bpy.data.collections["Collection"].objects.unlink(self.blender_object)
         bpy.data.objects.remove(self.blender_object, do_unlink=True)
 
     def _link(self):
-        bpy.data.collections["Collection"].objects.link(self.blender_object)
+        if self._collection is not None:
+            bpy.data.collections[self._collection.name].objects.link(
+                self.blender_object
+            )
+        else:
+            bpy.data.collections["Collection"].objects.link(self.blender_object)
         flip_normals(self.blender_object)
 
 
@@ -149,16 +163,22 @@ class ChargeDensity(Isosurface):
 
 class Wavefunction:
     def __init__(self, filename, *args, name=None, **kwargs):
-        self._name = Path(filename).stem if name is None else name
+        name = Path(filename).stem if name is None else name
+        self.collection = Collection(name)
 
         if "level" not in kwargs or kwargs["level"] is None:
             kwargs["level"] = 0.05
 
-        kwargs["name"] = f"{self._name} - Positive"
+        kwargs["name"] = f"{name} - Positive"
         self.positive = Isosurface.read(filename, *args, **kwargs)
         kwargs["level"] = -self.positive.level
-        kwargs["name"] = f"{self._name} - Negative"
+        kwargs["name"] = f"{name} - Negative"
         self.negative = Isosurface.read(filename, *args, **kwargs)
+        self.negative._collection = self.collection
+        self.positive._collection = self.collection
+
+        self.collection.add(self.positive)
+        self.collection.add(self.negative)
 
     @classmethod
     def read(cls, *args, **kwargs):
@@ -177,11 +197,11 @@ class Wavefunction:
 
     @property
     def name(self):
-        return self._name
+        return self.collection.name
 
     @name.setter
     def name(self, name):
-        self.name = name
+        self.collection.name = name
         self.positive.name = f"{name} - Positive"
         self.negative.name = f"{name} - Negative"
 
