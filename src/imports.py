@@ -1,9 +1,9 @@
-from bpy_extras.io_utils import ImportHelper
 from bpy.props import StringProperty
 from bpy.types import Operator
+from bpy_extras.io_utils import ImportHelper
 
 from .atom import Atoms
-from .wavefunction import Wavefunction
+from .isosurface import Wavefunction, ChargeDensity
 
 
 class CubeImport(Operator, ImportHelper):
@@ -52,3 +52,17 @@ class POSCARImport(Operator, ImportHelper):
 
 def menu_func_import_poscar(self, *args, **kwar):
     self.layout.operator(POSCARImport.bl_idname, text="POSCAR (POSCAR)")
+
+
+class CHGCARImport(Operator, ImportHelper):
+    bl_idname = "import.chgcar"
+    bl_label = "Import CHGCAR"
+
+    def execute(self, context):
+        Atoms.read(self.filepath)
+        ChargeDensity.read(self.filepath)
+        return {"FINISHED"}
+
+
+def menu_func_import_chgcar(self, *args, **kwargs):
+    self.layout.operator(CHGCARImport.bl_idname, text="CHGCAR/PARCHG")

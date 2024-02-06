@@ -1,33 +1,29 @@
 import bpy  # type: ignore
 
-from .base import BlenderObject
+from .object import Object
 
 
-class Light(BlenderObject):
+class Light(Object):
     first = True
 
     def __init__(self, energy=10, position=(0, 0, 25), rotation=(0, 0, 0)):
+        if Light.first:
+            try:
+                self.blender_object = bpy.data.objects["Light"]
+            except KeyError:
+                bpy.ops.object.light_add(type="SUN")
+                self.blender_object = bpy.context.active_object
+            else:
+                self.blender_object.data.type = "SUN"
+            finally:
+                Light.first = False
+        else:
+            bpy.ops.object.light_add(type="SUN")
+            self.blender_object = bpy.context.active_object
+
         self.position = position
         self.rotation = rotation
         self.energy = energy
-
-    def __new__(cls, *args, **kwargs):
-        light = super(Light, cls).__new__(cls)
-        if cls.first:
-            try:
-                light.blender_object = bpy.data.objects["Light"]
-            except KeyError:
-                bpy.ops.object.light_add(type="SUN")
-                light.blender_object = bpy.context.active_object
-            else:
-                light.blender_object.data.type = "SUN"
-            finally:
-                cls.first = False
-        else:
-            bpy.ops.object.light_add(type="SUN")
-            light.blender_object = bpy.context.active_object
-
-        return light
 
     @property
     def energy(self):

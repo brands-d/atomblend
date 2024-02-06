@@ -1,70 +1,104 @@
 from pathlib import Path
-import bpy  # type: ignore
-
 from json import load
+
+import bpy
+
+from .periodic_table import PeriodicTable
 
 
 class Material:
+    custom_material_directory = Path(
+        Path(__file__).parent / "resources" / "custom_materials.blend"
+    )
+    preset_material_directory = Path(
+        Path(__file__).parent / "resources" / "preset_materials.blend"
+    )
+    fallback_file = Path(
+        Path(__file__).parent / "resources" / "fallback_materials.json"
+    )
 
-    materials = []
-    
-    def __init__(self, name="New Material", properties={}):
-        self.name = name
-        self.material = bpy.data.materials.new(name=name)
-        self.material.use_nodes = True
-        self.material.use_backface_culling = True
-        self.material.blend_method = "BLEND"
-        self.node = self.material.node_tree.nodes["Principled BSDF"]
-        self.properties = properties
-
-    @classmethod
-    def pre_defined(cls, name):
-        for material in Material.materials:
-            if material.name == name:
-                return material
-
-        # Not existing already
-        with open(Path(__file__).parent / "resources" / "materials.json") as file:
-            data = load(file)
-    
-        for material in data:
-            if material["Name"] == name:
-                return Material(name, material["Properties"])
-        
-        return None
-
-    @property
-    def base_color(self):
-        return self.node.inputs["Base Color"].default_value[:]
-
-    @base_color.setter
-    def base_color(self, color):
-        self.node.inputs["Base Color"].default_value = color
-
-    @property
-    def properties(self):
-        properties = {}
-        for key, value in self.node.inputs.items():
-            if isinstance(value.default_value, bpy.types.bpy_prop_array):
-                properties[key] = tuple(value.default_value[:])
-            else:
-                properties[key] = value.default_value
-
-        return properties
-
-    @properties.setter
-    def properties(self, properties):
-        for key, value in properties.items():
+    def __init__(self, name):
+        if len(name) <= 2:
             try:
-                self.node.inputs[key].default_value = value
+                name = PeriodicTable[name].name
+            except KeyError:
+                name = "Unknown"
+
+        material = bpy.data.materials.get(name)
+        if material is None:
+            try:
+                Material.load_preset_material(name)
             except KeyError:
                 pass
 
-    def update(self, properties):
-        self.properties = properties
-        return self
+        material = bpy.data.materials.get(name)
+        if material is None:
+            try:
+                Material.load_preset_material(name, custom=False)
+            except KeyError:
+                pass
 
-    def copy(self, name=None):
-        if name is None:
-            name = self.material.name + " Copy"
-        return Material(self.material.name, self.properties)
+        material = bpy.data.materials.get(name)
+        if material is None:
+            try:
+                Material.load_fallback_material(name)
+            except KeyError:
+                pass
+
+        material = bpy.data.materials.get(name)
+        if material is None:
+            print("Material not found. Creating new material.")
+            material = Material.create(name)
+
+        self._material = material
+
+    @property
+    def material(self):
+        return self._material
+
+    @material.setter
+    def material(self, material):
+        self._material = material
+
+    @classmethod
+    def load_fallback_material(cls, name):
+        with open(Material.fallback_file) as file:
+            data = load(file)
+
+        for material in data:
+            if material["name"] == name:
+                Material.create(name, material["properties"])
+                break
+
+    @classmethod
+    def load_preset_material(cls, name, custom=True):
+        if custom:
+            directory = str(Material.custom_material_directory) + "/Material/"
+        else:
+            directory = str(Material.preset_material_directory) + "/Material/"
+
+        bpy.ops.wm.append(
+            filepath="/Material/" + name,
+            filename=name,
+            directory=directory,
+        )
+        material = bpy.data.materials.get(name)
+
+        if material is None:
+            raise KeyError(f"Material {name} not found")
+        else:
+            return material
+
+    @classmethod
+    def create(cls, name, properties={}):
+        material = bpy.data.materials.new(name=name)
+        material.use_nodes = True
+        material.use_backface_culling = True
+        material.blend_method = "BLEND"
+        node = material.node_tree.nodes["Principled BSDF"]
+
+        for key, value in properties.items():
+            try:
+                node.inputs[key].default_value = value
+            except KeyError:
+                pass

@@ -13,4 +13,4 @@ wf = Wavefunction.read(dir_ / "data" / "benzene_HOMO-6.cube")
 # Camera object needed for rendering
 camera = Camera()
 # Use "fast" to set scene, "quality" for final render (much slower)
-camera.render(dir_ / "output" / "cube.png", mode="quality")
+# camera.render(dir_ / "output" / "cube.png", mode="quality")

@@ -1,22 +1,26 @@
 import bpy  # type: ignore
 
-from .base import BlenderObject
+from .object import Object
 
 
-class Camera(BlenderObject):
-    instance = None
-    blender_object = None
+class Camera(Object):
+    _blender_object = None
 
-    def __new__(cls, position=(0, 0, 20), rotation=(0, 0, 0)):
-        if cls.instance is None:
-            cls.instance = super(Camera, cls).__new__(cls)
+    def __init__(self, position=(0, 0, 10), rotation=(0, 0, 0)):
+        if self.blender_object is None:
+            self.blender_object = bpy.context.scene.camera
 
-        cls.blender_object = bpy.context.scene.camera
-        cls.instance.position = position
-        cls.instance.rotation = rotation
-        cls.instance.resolution = (1080, 1080)
+        self.position = position
+        self.rotation = rotation
+        self.resolution = (1080, 1080)
 
-        return cls.instance
+    @property
+    def blender_object(self):
+        return Camera._blender_object
+
+    @blender_object.setter
+    def blender_object(self, blender_object):
+        Camera._blender_object = blender_object
 
     @property
     def resolution(self):
@@ -32,22 +36,8 @@ class Camera(BlenderObject):
 
     @property
     def focuslength(self):
-        return bpy.data.cameras["Camera"].lens
+        return self._blender_object.lens
 
     @focuslength.setter
     def focuslength(self, focuslength):
-        bpy.data.cameras["Camera"].lens = focuslength
-
-    def render(self, filepath=None, mode="quality"):
-        engine = bpy.context.scene.render.engine
-        if mode.lower() in ["fast", "performance", "eevee"]:
-            bpy.context.scene.render.engine = "BLENDER_EEVEE"
-        elif mode.lower() in ["slow", "quality", "beautiful", "cycles"]:
-            bpy.context.scene.render.engine = "CYCLES"
-
-        if filepath is not None:
-            bpy.context.scene.render.filepath = str(filepath)
-            bpy.ops.render.render(write_still=True)
-        else:
-            bpy.ops.render.render()
-        bpy.context.scene.render.engine = engine
+        self._blender_object.lens = focuslength

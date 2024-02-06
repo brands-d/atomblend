@@ -2,19 +2,21 @@ import bpy  # type: ignore
 from math import degrees  # type: ignore
 from mathutils import Vector, Euler  # type: ignore
 
-from .base import BlenderObject
+from .meshobject import MeshObject
+from .material import Material
 
 
-class Plane(BlenderObject):
+class Plane(MeshObject):
     def __init__(
-        self, size=(100, 100), location=(0, 0, -10), rotation=(0, 0, 0), material=None
+        self, size=(100, 100), position=(0, 0, -5), rotation=(0, 0, 0), material=None
     ):
-        bpy.ops.mesh.primitive_plane_add(location=location)
-        self.blender_object = bpy.context.active_object
-        self.size = size
-        if material is not None:
-            self.material = material
+        bpy.ops.mesh.primitive_plane_add(location=position)
         super().__init__()
+
+        if material is not None:
+            self.material = Material(material)
+
+        self.size = size
 
     @property
     def orientation(self):
@@ -31,8 +33,8 @@ class Plane(BlenderObject):
 
     @property
     def size(self):
-        return list(self.blender_object.scale[:2])
+        return self.scale[:2]
 
     @size.setter
     def size(self, size):
-        self.blender_object.scale = (size[0], size[1], 1)
+        self.scale = (size[0], size[1], 1)

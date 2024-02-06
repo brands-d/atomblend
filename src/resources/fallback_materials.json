@@ -1,78 +1,7 @@
 [
     {
-        "Name": "Bond",
-        "Properties": {
-            "Base Color": [
-                0.5,
-                0.5,
-                0.5,
-                1
-            ]
-        }
-    },
-    {
-        "Name": "Positive Wavefunction",
-        "Properties": {
-            "Base Color": [
-                1,
-                0,
-                0,
-                1
-            ],
-            "Alpha": 0.8,
-            "Transmission Weight": 0.5,
-            "Emission Color": [
-                1,
-                0,
-                0,
-                1
-            ],
-            "Emission Strength": 0.5
-        }
-    },
-    {
-        "Name": "Negative Wavefunction",
-        "Properties": {
-            "Base Color": [
-                0,
-                0,
-                1,
-                1
-            ],
-            "Alpha": 0.8,
-            "Transmission Weight": 0.5,
-            "Emission Color": [
-                0,
-                0,
-                1,
-                1
-            ],
-            "Emission Strength": 0.5
-        }
-    },
-    {
-        "Name": "Charge Density",
-        "Properties": {
-            "Base Color": [
-                0.5,
-                0.4,
-                0.1,
-                1
-            ],
-            "Alpha": 0.8,
-            "Transmission Weight": 0.5,
-            "Emission Color": [
-                0.5,
-                0.4,
-                0.1,
-                1
-            ],
-            "Emission Strength": 0.5
-        }
-    },
-    {
-        "Name": "H",
-        "Properties": {
+        "name": "Hydrogen",
+        "properties": {
             "Base Color": [
                 1,
                 1,
@@ -82,8 +11,8 @@
         }
     },
     {
-        "Name": "D",
-        "Properties": {
+        "name": "D",
+        "properties": {
             "Base Color": [
                 1,
                 1,
@@ -93,8 +22,8 @@
         }
     },
     {
-        "Name": "T",
-        "Properties": {
+        "name": "T",
+        "properties": {
             "Base Color": [
                 1,
                 1,
@@ -104,8 +33,8 @@
         }
     },
     {
-        "Name": "He",
-        "Properties": {
+        "name": "He",
+        "properties": {
             "Base Color": [
                 0.851,
                 1,
@@ -115,8 +44,8 @@
         }
     },
     {
-        "Name": "Li",
-        "Properties": {
+        "name": "Lithium",
+        "properties": {
             "Base Color": [
                 0.8,
                 0.502,
@@ -126,8 +55,8 @@
         }
     },
     {
-        "Name": "Be",
-        "Properties": {
+        "name": "Beryllium",
+        "properties": {
             "Base Color": [
                 0.761,
                 1,
@@ -137,8 +66,8 @@
         }
     },
     {
-        "Name": "B",
-        "Properties": {
+        "name": "Boron",
+        "properties": {
             "Base Color": [
                 1,
                 0.71,
@@ -148,8 +77,8 @@
         }
     },
     {
-        "Name": "C",
-        "Properties": {
+        "name": "Carbon",
+        "properties": {
             "Base Color": [
                 0.565,
                 0.565,
@@ -159,8 +88,8 @@
         }
     },
     {
-        "Name": "N",
-        "Properties": {
+        "name": "Nitrogen",
+        "properties": {
             "Base Color": [
                 0.188,
                 0.314,
@@ -170,8 +99,8 @@
         }
     },
     {
-        "Name": "O",
-        "Properties": {
+        "name": "Oxygen",
+        "properties": {
             "Base Color": [
                 1,
                 0.051,
@@ -181,8 +110,8 @@
         }
     },
     {
-        "Name": "F",
-        "Properties": {
+        "name": "Fluorine",
+        "properties": {
             "Base Color": [
                 0.565,
                 0.878,
@@ -192,8 +121,8 @@
         }
     },
     {
-        "Name": "Ne",
-        "Properties": {
+        "name": "Ne",
+        "properties": {
             "Base Color": [
                 0.702,
                 0.89,
@@ -203,8 +132,8 @@
         }
     },
     {
-        "Name": "Na",
-        "Properties": {
+        "name": "Sodium",
+        "properties": {
             "Base Color": [
                 0.671,
                 0.361,
@@ -214,8 +143,8 @@
         }
     },
     {
-        "Name": "Mg",
-        "Properties": {
+        "name": "Magnesium",
+        "properties": {
             "Base Color": [
                 0.541,
                 1,
@@ -225,8 +154,8 @@
         }
     },
     {
-        "Name": "Al",
-        "Properties": {
+        "name": "Aluminium",
+        "properties": {
             "Base Color": [
                 0.749,
                 0.651,
@@ -236,8 +165,8 @@
         }
     },
     {
-        "Name": "Si",
-        "Properties": {
+        "name": "Silicon",
+        "properties": {
             "Base Color": [
                 0.941,
                 0.784,
@@ -247,8 +176,8 @@
         }
     },
     {
-        "Name": "P",
-        "Properties": {
+        "name": "Phosphorus",
+        "properties": {
             "Base Color": [
                 1,
                 0.502,
@@ -258,8 +187,8 @@
         }
     },
     {
-        "Name": "S",
-        "Properties": {
+        "name": "Sulfur",
+        "properties": {
             "Base Color": [
                 1,
                 1,
@@ -269,8 +198,8 @@
         }
     },
     {
-        "Name": "Cl",
-        "Properties": {
+        "name": "Chlorine",
+        "properties": {
             "Base Color": [
                 0.122,
                 0.941,
@@ -280,8 +209,8 @@
         }
     },
     {
-        "Name": "Ar",
-        "Properties": {
+        "name": "Ar",
+        "properties": {
             "Base Color": [
                 0.502,
                 0.82,
@@ -291,8 +220,8 @@
         }
     },
     {
-        "Name": "K",
-        "Properties": {
+        "name": "Potassium",
+        "properties": {
             "Base Color": [
                 0.561,
                 0.251,
@@ -302,8 +231,8 @@
         }
     },
     {
-        "Name": "Ca",
-        "Properties": {
+        "name": "Calcium",
+        "properties": {
             "Base Color": [
                 0.239,
                 1,
@@ -313,8 +242,8 @@
         }
     },
     {
-        "Name": "Sc",
-        "Properties": {
+        "name": "Scandium",
+        "properties": {
             "Base Color": [
                 0.902,
                 0.902,
@@ -324,8 +253,8 @@
         }
     },
     {
-        "Name": "Ti",
-        "Properties": {
+        "name": "Titanium",
+        "properties": {
             "Base Color": [
                 0.749,
                 0.761,
@@ -335,8 +264,8 @@
         }
     },
     {
-        "Name": "V",
-        "Properties": {
+        "name": "Vanadium",
+        "properties": {
             "Base Color": [
                 0.651,
                 0.651,
@@ -346,8 +275,8 @@
         }
     },
     {
-        "Name": "Cr",
-        "Properties": {
+        "name": "Chromium",
+        "properties": {
             "Base Color": [
                 0.541,
                 0.6,
@@ -357,8 +286,8 @@
         }
     },
     {
-        "Name": "Mn",
-        "Properties": {
+        "name": "Manganese",
+        "properties": {
             "Base Color": [
                 0.612,
                 0.478,
@@ -368,8 +297,8 @@
         }
     },
     {
-        "Name": "Fe",
-        "Properties": {
+        "name": "Iron",
+        "properties": {
             "Base Color": [
                 0.878,
                 0.4,
@@ -379,8 +308,8 @@
         }
     },
     {
-        "Name": "Co",
-        "Properties": {
+        "name": "Cobalt",
+        "properties": {
             "Base Color": [
                 0.941,
                 0.565,
@@ -390,8 +319,8 @@
         }
     },
     {
-        "Name": "Ni",
-        "Properties": {
+        "name": "Nickel",
+        "properties": {
             "Base Color": [
                 0.314,
                 0.816,
@@ -401,8 +330,8 @@
         }
     },
     {
-        "Name": "Cu",
-        "Properties": {
+        "name": "Copper",
+        "properties": {
             "Base Color": [
                 0.784,
                 0.502,
@@ -412,8 +341,8 @@
         }
     },
     {
-        "Name": "Zn",
-        "Properties": {
+        "name": "Zinc",
+        "properties": {
             "Base Color": [
                 0.49,
                 0.502,
@@ -423,8 +352,8 @@
         }
     },
     {
-        "Name": "Ga",
-        "Properties": {
+        "name": "Gallium",
+        "properties": {
             "Base Color": [
                 0.761,
                 0.561,
@@ -434,8 +363,8 @@
         }
     },
     {
-        "Name": "Ge",
-        "Properties": {
+        "name": "Germanium",
+        "properties": {
             "Base Color": [
                 0.4,
                 0.561,
@@ -445,8 +374,8 @@
         }
     },
     {
-        "Name": "As",
-        "Properties": {
+        "name": "Arsenic",
+        "properties": {
             "Base Color": [
                 0.741,
                 0.502,
@@ -456,8 +385,8 @@
         }
     },
     {
-        "Name": "Se",
-        "Properties": {
+        "name": "Selenium",
+        "properties": {
             "Base Color": [
                 1,
                 0.631,
@@ -467,8 +396,8 @@
         }
     },
     {
-        "Name": "Br",
-        "Properties": {
+        "name": "Bromine",
+        "properties": {
             "Base Color": [
                 0.651,
                 0.161,
@@ -478,8 +407,8 @@
         }
     },
     {
-        "Name": "Kr",
-        "Properties": {
+        "name": "Kr",
+        "properties": {
             "Base Color": [
                 0.361,
                 0.722,
@@ -489,8 +418,8 @@
         }
     },
     {
-        "Name": "Rb",
-        "Properties": {
+        "name": "Rubidium",
+        "properties": {
             "Base Color": [
                 0.439,
                 0.18,
@@ -500,8 +429,8 @@
         }
     },
     {
-        "Name": "Sr",
-        "Properties": {
+        "name": "Strontium",
+        "properties": {
             "Base Color": [
                 0,
                 1,
@@ -511,8 +440,8 @@
         }
     },
     {
-        "Name": "Y",
-        "Properties": {
+        "name": "Yttrium",
+        "properties": {
             "Base Color": [
                 0.58,
                 1,
@@ -522,8 +451,8 @@
         }
     },
     {
-        "Name": "Zr",
-        "Properties": {
+        "name": "Zirconium",
+        "properties": {
             "Base Color": [
                 0.58,
                 0.878,
@@ -533,8 +462,8 @@
         }
     },
     {
-        "Name": "Nb",
-        "Properties": {
+        "name": "Niobium",
+        "properties": {
             "Base Color": [
                 0.451,
                 0.761,
@@ -544,8 +473,8 @@
         }
     },
     {
-        "Name": "Mo",
-        "Properties": {
+        "name": "Molybdenum",
+        "properties": {
             "Base Color": [
                 0.329,
                 0.71,
@@ -555,8 +484,8 @@
         }
     },
     {
-        "Name": "Tc",
-        "Properties": {
+        "name": "Technetium",
+        "properties": {
             "Base Color": [
                 0.231,
                 0.62,
@@ -566,8 +495,8 @@
         }
     },
     {
-        "Name": "Ru",
-        "Properties": {
+        "name": "Ruthenium",
+        "properties": {
             "Base Color": [
                 0.141,
                 0.561,
@@ -577,8 +506,8 @@
         }
     },
     {
-        "Name": "Rh",
-        "Properties": {
+        "name": "Rhodium",
+        "properties": {
             "Base Color": [
                 0.039,
                 0.49,
@@ -588,8 +517,8 @@
         }
     },
     {
-        "Name": "Pd",
-        "Properties": {
+        "name": "Palladium",
+        "properties": {
             "Base Color": [
                 0,
                 0.412,
@@ -599,8 +528,8 @@
         }
     },
     {
-        "Name": "Ag",
-        "Properties": {
+        "name": "Silver",
+        "properties": {
             "Base Color": [
                 0.753,
                 0.753,
@@ -610,8 +539,8 @@
         }
     },
     {
-        "Name": "Cd",
-        "Properties": {
+        "name": "Cadmium",
+        "properties": {
             "Base Color": [
                 1,
                 0.851,
@@ -621,8 +550,8 @@
         }
     },
     {
-        "Name": "In",
-        "Properties": {
+        "name": "Indium",
+        "properties": {
             "Base Color": [
                 0.651,
                 0.459,
@@ -632,8 +561,8 @@
         }
     },
     {
-        "Name": "Sn",
-        "Properties": {
+        "name": "Tin",
+        "properties": {
             "Base Color": [
                 0.4,
                 0.502,
@@ -643,8 +572,8 @@
         }
     },
     {
-        "Name": "Sb",
-        "Properties": {
+        "name": "Antimony",
+        "properties": {
             "Base Color": [
                 0.62,
                 0.388,
@@ -654,8 +583,8 @@
         }
     },
     {
-        "Name": "Te",
-        "Properties": {
+        "name": "Tellurium",
+        "properties": {
             "Base Color": [
                 0.831,
                 0.478,
@@ -665,8 +594,8 @@
         }
     },
     {
-        "Name": "I",
-        "Properties": {
+        "name": "Iodine",
+        "properties": {
             "Base Color": [
                 0.58,
                 0,
@@ -676,8 +605,8 @@
         }
     },
     {
-        "Name": "Xe",
-        "Properties": {
+        "name": "Xe",
+        "properties": {
             "Base Color": [
                 0.259,
                 0.62,
@@ -687,8 +616,8 @@
         }
     },
     {
-        "Name": "Cs",
-        "Properties": {
+        "name": "Cesium",
+        "properties": {
             "Base Color": [
                 0.341,
                 0.09,
@@ -698,8 +627,8 @@
         }
     },
     {
-        "Name": "Ba",
-        "Properties": {
+        "name": "Barium",
+        "properties": {
             "Base Color": [
                 0,
                 0.788,
@@ -709,8 +638,8 @@
         }
     },
     {
-        "Name": "La",
-        "Properties": {
+        "name": "Lanthanum",
+        "properties": {
             "Base Color": [
                 0.439,
                 0.671,
@@ -720,8 +649,8 @@
         }
     },
     {
-        "Name": "Ce",
-        "Properties": {
+        "name": "Cerium",
+        "properties": {
             "Base Color": [
                 1,
                 1,
@@ -731,8 +660,8 @@
         }
     },
     {
-        "Name": "Pr",
-        "Properties": {
+        "name": "Praseodymium",
+        "properties": {
             "Base Color": [
                 0.851,
                 1,
@@ -742,8 +671,8 @@
         }
     },
     {
-        "Name": "Nd",
-        "Properties": {
+        "name": "Neodymium",
+        "properties": {
             "Base Color": [
                 0.78,
                 1,
@@ -753,8 +682,8 @@
         }
     },
     {
-        "Name": "Pm",
-        "Properties": {
+        "name": "Promethium",
+        "properties": {
             "Base Color": [
                 0.639,
                 1,
@@ -764,8 +693,8 @@
         }
     },
     {
-        "Name": "Sm",
-        "Properties": {
+        "name": "Samarium",
+        "properties": {
             "Base Color": [
                 0.533,
                 1,
@@ -775,8 +704,8 @@
         }
     },
     {
-        "Name": "Eu",
-        "Properties": {
+        "name": "Europium",
+        "properties": {
             "Base Color": [
                 0.239,
                 1,
@@ -786,8 +715,8 @@
         }
     },
     {
-        "Name": "Gd",
-        "Properties": {
+        "name": "Gadolinium",
+        "properties": {
             "Base Color": [
                 0.18,
                 1,
@@ -797,8 +726,8 @@
         }
     },
     {
-        "Name": "Tb",
-        "Properties": {
+        "name": "Terbium",
+        "properties": {
             "Base Color": [
                 0.118,
                 1,
@@ -808,8 +737,8 @@
         }
     },
     {
-        "Name": "Dy",
-        "Properties": {
+        "name": "Dysprosium",
+        "properties": {
             "Base Color": [
                 0.078,
                 1,
@@ -819,8 +748,8 @@
         }
     },
     {
-        "Name": "Ho",
-        "Properties": {
+        "name": "Holmium",
+        "properties": {
             "Base Color": [
                 0,
                 1,
@@ -830,8 +759,8 @@
         }
     },
     {
-        "Name": "Er",
-        "Properties": {
+        "name": "Erbium",
+        "properties": {
             "Base Color": [
                 0,
                 0.901,
@@ -841,8 +770,8 @@
         }
     },
     {
-        "Name": "Tm",
-        "Properties": {
+        "name": "Thulium",
+        "properties": {
             "Base Color": [
                 0,
                 0.831,
@@ -852,8 +781,8 @@
         }
     },
     {
-        "Name": "Yb",
-        "Properties": {
+        "name": "Ytterbium",
+        "properties": {
             "Base Color": [
                 0,
                 0.749,
@@ -863,8 +792,8 @@
         }
     },
     {
-        "Name": "Lu",
-        "Properties": {
+        "name": "Lutetium",
+        "properties": {
             "Base Color": [
                 0,
                 0.67,
@@ -874,8 +803,8 @@
         }
     },
     {
-        "Name": "Hf",
-        "Properties": {
+        "name": "Hafnium",
+        "properties": {
             "Base Color": [
                 0.302,
                 0.761,
@@ -885,8 +814,8 @@
         }
     },
     {
-        "Name": "Ta",
-        "Properties": {
+        "name": "Tantalum",
+        "properties": {
             "Base Color": [
                 0.302,
                 0.651,
@@ -896,8 +825,8 @@
         }
     },
     {
-        "Name": "W",
-        "Properties": {
+        "name": "Tungsten",
+        "properties": {
             "Base Color": [
                 0.129,
                 0.58,
@@ -907,8 +836,8 @@
         }
     },
     {
-        "Name": "Re",
-        "Properties": {
+        "name": "Rhenium",
+        "properties": {
             "Base Color": [
                 0.149,
                 0.49,
@@ -918,8 +847,8 @@
         }
     },
     {
-        "Name": "Os",
-        "Properties": {
+        "name": "Osmium",
+        "properties": {
             "Base Color": [
                 0.149,
                 0.4,
@@ -929,8 +858,8 @@
         }
     },
     {
-        "Name": "Ir",
-        "Properties": {
+        "name": "Iridium",
+        "properties": {
             "Base Color": [
                 0.09,
                 0.329,
@@ -940,8 +869,8 @@
         }
     },
     {
-        "Name": "Pt",
-        "Properties": {
+        "name": "Platinum",
+        "properties": {
             "Base Color": [
                 0.816,
                 0.816,
@@ -951,8 +880,8 @@
         }
     },
     {
-        "Name": "Au",
-        "Properties": {
+        "name": "Gold",
+        "properties": {
             "Base Color": [
                 1,
                 0.82,
@@ -962,8 +891,8 @@
         }
     },
     {
-        "Name": "Hg",
-        "Properties": {
+        "name": "Mercury",
+        "properties": {
             "Base Color": [
                 0.722,
                 0.722,
@@ -973,8 +902,8 @@
         }
     },
     {
-        "Name": "Tl",
-        "Properties": {
+        "name": "Thallium",
+        "properties": {
             "Base Color": [
                 0.651,
                 0.329,
@@ -984,8 +913,8 @@
         }
     },
     {
-        "Name": "Pb",
-        "Properties": {
+        "name": "Lead",
+        "properties": {
             "Base Color": [
                 0.341,
                 0.349,
@@ -995,8 +924,8 @@
         }
     },
     {
-        "Name": "Bi",
-        "Properties": {
+        "name": "Bismuth",
+        "properties": {
             "Base Color": [
                 0.619,
                 0.309,
@@ -1006,8 +935,8 @@
         }
     },
     {
-        "Name": "Po",
-        "Properties": {
+        "name": "Polonium",
+        "properties": {
             "Base Color": [
                 0.671,
                 0.361,
@@ -1017,8 +946,8 @@
         }
     },
     {
-        "Name": "At",
-        "Properties": {
+        "name": "At",
+        "properties": {
             "Base Color": [
                 0.459,
                 0.309,
@@ -1028,8 +957,8 @@
         }
     },
     {
-        "Name": "Rn",
-        "Properties": {
+        "name": "Rn",
+        "properties": {
             "Base Color": [
                 0.259,
                 0.51,
@@ -1039,8 +968,8 @@
         }
     },
     {
-        "Name": "Fr",
-        "Properties": {
+        "name": "Fr",
+        "properties": {
             "Base Color": [
                 0.259,
                 0,
@@ -1050,8 +979,8 @@
         }
     },
     {
-        "Name": "Ra",
-        "Properties": {
+        "name": "Radium",
+        "properties": {
             "Base Color": [
                 0,
                 0.49,
@@ -1061,8 +990,8 @@
         }
     },
     {
-        "Name": "Ac",
-        "Properties": {
+        "name": "Actinium",
+        "properties": {
             "Base Color": [
                 0.439,
                 0.671,
@@ -1072,8 +1001,8 @@
         }
     },
     {
-        "Name": "Th",
-        "Properties": {
+        "name": "Thorium",
+        "properties": {
             "Base Color": [
                 0,
                 0.729,
@@ -1083,8 +1012,8 @@
         }
     },
     {
-        "Name": "Pa",
-        "Properties": {
+        "name": "Protactinium",
+        "properties": {
             "Base Color": [
                 0,
                 0.631,
@@ -1094,8 +1023,8 @@
         }
     },
     {
-        "Name": "U",
-        "Properties": {
+        "name": "Uranium",
+        "properties": {
             "Base Color": [
                 0,
                 0.561,
@@ -1105,8 +1034,8 @@
         }
     },
     {
-        "Name": "Np",
-        "Properties": {
+        "name": "Neptunium",
+        "properties": {
             "Base Color": [
                 0,
                 0.502,
@@ -1116,8 +1045,8 @@
         }
     },
     {
-        "Name": "Pu",
-        "Properties": {
+        "name": "Plutonium",
+        "properties": {
             "Base Color": [
                 0,
                 0.42,
@@ -1127,8 +1056,8 @@
         }
     },
     {
-        "Name": "Am",
-        "Properties": {
+        "name": "Americium",
+        "properties": {
             "Base Color": [
                 0.329,
                 0.361,
@@ -1138,8 +1067,8 @@
         }
     },
     {
-        "Name": "Cm",
-        "Properties": {
+        "name": "Curium",
+        "properties": {
             "Base Color": [
                 0.471,
                 0.361,
@@ -1149,8 +1078,8 @@
         }
     },
     {
-        "Name": "Bk",
-        "Properties": {
+        "name": "Bk",
+        "properties": {
             "Base Color": [
                 0.541,
                 0.31,
@@ -1160,8 +1089,8 @@
         }
     },
     {
-        "Name": "Cf",
-        "Properties": {
+        "name": "Cf",
+        "properties": {
             "Base Color": [
                 0.639,
                 0.212,
@@ -1171,8 +1100,8 @@
         }
     },
     {
-        "Name": "Es",
-        "Properties": {
+        "name": "Es",
+        "properties": {
             "Base Color": [
                 0.702,
                 0.122,
@@ -1182,8 +1111,8 @@
         }
     },
     {
-        "Name": "Fm",
-        "Properties": {
+        "name": "Fm",
+        "properties": {
             "Base Color": [
                 0.702,
                 0.122,
@@ -1193,8 +1122,8 @@
         }
     },
     {
-        "Name": "Md",
-        "Properties": {
+        "name": "Md",
+        "properties": {
             "Base Color": [
                 0.702,
                 0.051,
@@ -1204,8 +1133,8 @@
         }
     },
     {
-        "Name": "No",
-        "Properties": {
+        "name": "No",
+        "properties": {
             "Base Color": [
                 0.741,
                 0,
@@ -1215,8 +1144,8 @@
         }
     },
     {
-        "Name": "Lr",
-        "Properties": {
+        "name": "Lr",
+        "properties": {
             "Base Color": [
                 0.78,
                 0,
@@ -1226,8 +1155,8 @@
         }
     },
     {
-        "Name": "Rf",
-        "Properties": {
+        "name": "Rf",
+        "properties": {
             "Base Color": [
                 0.8,
                 0,
@@ -1237,8 +1166,8 @@
         }
     },
     {
-        "Name": "Db",
-        "Properties": {
+        "name": "Db",
+        "properties": {
             "Base Color": [
                 0.82,
                 0,
@@ -1248,8 +1177,8 @@
         }
     },
     {
-        "Name": "Sg",
-        "Properties": {
+        "name": "Sg",
+        "properties": {
             "Base Color": [
                 0.851,
                 0,
@@ -1259,8 +1188,8 @@
         }
     },
     {
-        "Name": "Bh",
-        "Properties": {
+        "name": "Bh",
+        "properties": {
             "Base Color": [
                 0.902,
                 0,
@@ -1270,8 +1199,8 @@
         }
     },
     {
-        "Name": "Hs",
-        "Properties": {
+        "name": "Hs",
+        "properties": {
             "Base Color": [
                 0.902,
                 0,
@@ -1281,8 +1210,8 @@
         }
     },
     {
-        "Name": "Mt",
-        "Properties": {
+        "name": "Mt",
+        "properties": {
             "Base Color": [
                 0.922,
                 0,
@@ -1292,8 +1221,8 @@
         }
     },
     {
-        "Name": "X",
-        "Properties": {
+        "name": "Veritasium",
+        "properties": {
             "Base Color": [
                 0,
                 0,
