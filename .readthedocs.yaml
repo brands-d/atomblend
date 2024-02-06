@@ -5,8 +5,7 @@ sphinx:
 
 formats:
    - pdf
-   - html
-   
+
 build:
   python:
     version: 3.8
