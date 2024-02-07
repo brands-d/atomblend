@@ -1,5 +1,13 @@
-[
-    {
-        "Default"
+{
+    "default": {
+        "material": {
+            "style": "metallic"
+        },
+        "atom": {
+            "size": 1,
+            "smooth": true,
+            "viewport_quality": 1,
+            "render_quality": 2
+        }
     }
-]
+}

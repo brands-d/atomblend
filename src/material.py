@@ -7,12 +7,11 @@ from .periodic_table import PeriodicTable
 
 
 class Material:
-    custom_material_directory = Path(
+    custom_material_directory = (
         Path(__file__).parent / "resources" / "materials_user.blend"
     )
-    preset_material_directory = Path(
-        Path(__file__).parent / "resources" / "materials.blend"
-    )
+
+    preset_material_directory = Path(__file__).parent / "resources" / "materials.blend"
 
     def __init__(self, name):
         if len(name) <= 2:

@@ -1,16 +1,11 @@
 from pathlib import Path
+from json import load
 
 
 class Preset:
-    preset = {
-        "material": {"style": "metallic"},
-        "atom": {
-            "size": 1,
-            "smooth": True,
-            "viewport_quality": 1,
-            "render_quality": 2,
-        },
-    }
+    presets_path = Path(__file__).parent / "resources" / "presets.json"
+
+    preset = load(open(presets_path))["default"]
 
     """
         material:
@@ -23,12 +18,9 @@ class Preset:
             render_quality: "low", "medium", "high"
     """
 
-    def __new__(cls, name):
-        super().__new__(cls)
-
-        # TODO LOAD PRESET
-
-        return None
+    @classmethod
+    def load(cls, name):
+        Preset.preset = load(open(Preset.presets_path))[name]
 
     @classmethod
     def get(cls, setting):
