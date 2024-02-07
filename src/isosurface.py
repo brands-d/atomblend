@@ -206,6 +206,15 @@ class Wavefunction:
         self.negative.name = f"{name} - Negative"
 
     @property
+    def scale(self):
+        return (self.positive.scale, self.negative.scale)
+
+    @scale.setter
+    def scale(self, scale):
+        self.positive.scale = scale
+        self.negative.scale = scale
+
+    @property
     def blender_object(self):
         return (self.positive.blender_object, self.negative.blender_object)
 
