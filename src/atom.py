@@ -21,12 +21,8 @@ class Atom(MeshObject):
     _atoms = []
 
     def __init__(self, element="X"):
-        try:
-            radius = PeriodicTable[element].radius
-            self.covalent_radius = PeriodicTable[element].covalent_radius
-        except KeyError:
-            radius = PeriodicTable["X"].radius
-            self.covalent_radius = PeriodicTable["X"].covalent_radius
+        radius = PeriodicTable[element].radius
+        self.covalent_radius = PeriodicTable[element].covalent_radius
 
         bpy.ops.mesh.primitive_uv_sphere_add(
             radius=radius * Preset.get("atom.size"), segments=16, ring_count=8
@@ -45,8 +41,9 @@ class Atom(MeshObject):
 
         self.element = element
         self.name = element
-        # self.material = Material(f"{element} - {Preset.get('material.style')}")
-        self.material = Material("element")
+        self.material = Material(
+            f'{PeriodicTable[element].name} - {Preset.get("material.style")}'
+        )
         Atom._atoms.append(self)
 
     @classmethod

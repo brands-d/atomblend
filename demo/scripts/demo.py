@@ -5,7 +5,7 @@ from ase import Atoms as AseAtoms
 
 reset()
 
-"""
+
 # Atom
 # new atoms for given element. 
 # Uses default radius and material if possible.
@@ -20,7 +20,7 @@ all_atoms_with_scale = Atom.get(lambda atom: atom.scale[0] == 1.4)
 
 #C.delete()  # deletes blender object
 C2.delete()
-"""
+
 
 """
 # Atoms

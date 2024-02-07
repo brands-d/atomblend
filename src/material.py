@@ -7,11 +7,7 @@ from .periodic_table import PeriodicTable
 
 
 class Material:
-    custom_material_directory = (
-        Path(__file__).parent / "resources" / "materials_user.blend"
-    )
-
-    preset_material_directory = Path(__file__).parent / "resources" / "materials.blend"
+    materials_directory = Path(__file__).parent / "resources" / "materials"
 
     def __init__(self, name):
         if len(name) <= 2:
@@ -23,14 +19,14 @@ class Material:
         material = bpy.data.materials.get(name)
         if material is None:
             try:
-                Material.load_preset_material(name)
+                Material.load_material(name)
             except KeyError:
                 pass
 
         material = bpy.data.materials.get(name)
         if material is None:
             try:
-                Material.load_preset_material(name, custom=False)
+                Material.load_material(name, custom=False)
             except KeyError:
                 pass
 
@@ -50,11 +46,14 @@ class Material:
         self._material = material
 
     @classmethod
-    def load_preset_material(cls, name, custom=True):
-        if custom:
-            directory = str(Material.custom_material_directory) + "/Material/"
-        else:
-            directory = str(Material.preset_material_directory) + "/Material/"
+    def load_material(cls, name, custom=True):
+        directory = (
+            str(
+                Material.materials_directory
+                / f'materials{"_user" if custom else ""}.blend'
+            )
+            + "/Material/"
+        )
 
         bpy.ops.wm.append(
             filepath="/Material/" + name,

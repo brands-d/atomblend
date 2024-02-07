@@ -1,7 +1,7 @@
 {
     "default": {
         "material": {
-            "style": "metallic"
+            "style": "basic"
         },
         "atom": {
             "size": 1,
