@@ -8,24 +8,27 @@ from .meshobject import MeshObject
 
 class Asset(MeshObject):
     """
-    Represents a complex pre-made object.
+    Imports a (complex) pre-made object (e.g. detectors, photons, etc.) from a
+    .blend file into the scene.
 
-    This class loads a pre-made blender object from a .blend file and
-    implements the MeshObject interface.
+    Assets are loaded from the `asset_directory` and added into the current
+    scene. To create a loadable asset, design your object in Blender and save the .blend file into the `asset_directory`.
 
-    To create a loadable asset, design your object in Blender and save the
-    .blend file into the `asset_directory`. The file name should be the lowercase
-    version of the object name inside Blender.
+    Note:
+        Currently only one object per .blend file is supported and it is
+        assumed that the filename is an all lowercase version of the objects
+        name inside the .blend file.
 
     Attributes:
         asset_directory (Path): The directory where the assets are located.
+            (`src/resources/assets`)
 
     Args:
         file (str): The name of the asset (object) to load.
 
     Examples:
+        This will load the object "NanoESCA" from the `asset_directory/nanoesca.blend` file.
         >>> detector = Asset("NanoESCA")
-        This will load the object "NanoESCA" from the 'asset_directory/nanoesca.blend' file.
     """
 
     asset_directory = Path(__file__).parent / "resources" / "assets"
@@ -38,18 +41,14 @@ class Asset(MeshObject):
     @classmethod
     def _load_asset(cls, file):
         """
-        Loads the asset file into Blender as a private method.
-
-        This method appends an object from a specified .blend file into the current Blender scene. The file should
-        be located in the predefined asset directory, and its name should be provided without the .blend extension.
-        It assumes that the object's name inside the .blend file matches the file name.
+        PRIVATE: Tries to load the asset file into Blender.
 
         Args:
-            file (str): The name of the asset file to load, excluding the .blend extension.
+            file (str): The name of the asset (object) to load.
 
         Returns:
-            bpy.types.Object or None: The Blender object representing the loaded asset. Returns None if the object
-            cannot be found or loaded.
+            bpy.types.Object or None: The Blender object representing the
+            loaded asset. Returns None if the object cannot be found or loaded.
         """
         if isabs(file):
             directory = Path(file) / "Object"
