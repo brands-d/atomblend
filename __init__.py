@@ -1,6 +1,6 @@
 from .dependencies import install_dependencies
 
-# install_dependencies()
+install_dependencies()
 
 import bpy  # type: ignore
 from . import auto_load
@@ -12,7 +12,7 @@ bl_info = {
     "author": "Dominik Brandstetter",
     "email": "dominik.brandstetter@uni-graz.at",
     "license": "MIT",
-    "version": (1, 0),
+    "version": (2, 0),
     "blender": (4, 0, 0),
     "description": "Import of common electronic structure files.",
     "doc_url": "https://github.com/brands-d/blentom/tree/main",
