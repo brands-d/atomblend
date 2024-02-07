@@ -4,11 +4,12 @@ from blentom import *
 from ase import Atoms as AseAtoms
 
 reset()
+
 """
 # Atom
 # new atoms for given element. 
 # Uses default radius and material if possible.
-C = Atom("C")  # from string
+C = Atom("Ni")  # from string
 C2 = Atom.ase(AseAtoms("C"))  # from ase
 
 all_atoms = Atom.get("all")
@@ -17,7 +18,7 @@ all_carbon_atoms = Atom.get("C")
 all_atoms_below_z0 = Atom.get(lambda atom: atom.location[2] < 0)
 all_atoms_with_scale = Atom.get(lambda atom: atom.scale[0] == 1.4)
 
-C.delete()  # deletes blender object
+#C.delete()  # deletes blender object
 C2.delete()
 """
 
@@ -54,6 +55,7 @@ H = Atom("H")
 H.name = "Josef" # name in UI
 H.blender_object # reference to blender object
 H.scale = 1.2 # multiplicative; only for mesh like objects
+H.scale = 1.2
 H.move((1,0,0)) # translation
 H.position = (1,0,0) # move to given position, .location identical
 H.rotation = (30,0,0) # Euler angle like UI, set rotation to fixed value
@@ -76,7 +78,7 @@ col = Collection("Water")
 col += Atom("H")
 C= Atom("C")
 col.add(C)
-col.remove(Atom.get("H")[0]) # also -
+#col.remove(Atom.get("H")[0]) # also -
 col.dissolve()
 
 
@@ -84,7 +86,7 @@ col = Collection("CH")
 col.add((C,Atom("H")))
 C.move((0,1,1))
 col.origin = C # for location and rotate(). Can be (x,y,z), "world", "cursor", an Object or center of the collection objects
-col.location = (0,0,0)
+#col.location = (0,0,0)
 """
 
 """
@@ -111,3 +113,10 @@ cubefile = Wavefunction.read("/Users/dominik/Desktop/blentom/demo/data/benzene_H
 cubefile.name = "Benzene"
 cubefile.level= 0.02
 """
+
+
+Preset.set("atom.viewport_quality", 0)
+Preset.set("atom.render_quality", 3)
+Preset.set("atom.size", 0.8)
+Preset.set("atom.smooth", False)
+Atom("H")

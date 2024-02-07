@@ -13,6 +13,7 @@ from .material import Material
 from .meshobject import MeshObject
 from .object import Object
 from .periodic_table import PeriodicTable
+from .preset import Preset
 
 
 class Atom(MeshObject):
@@ -27,13 +28,25 @@ class Atom(MeshObject):
             radius = PeriodicTable["X"].radius
             self.covalent_radius = PeriodicTable["X"].covalent_radius
 
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=radius)
+        bpy.ops.mesh.primitive_uv_sphere_add(
+            radius=radius * Preset.get("atom.size"), segments=16, ring_count=8
+        )
         super().__init__()
+
+        self.blender_object.data.polygons.foreach_set(
+            "use_smooth",
+            [Preset.get("atom.smooth")] * len(self.blender_object.data.polygons),
+        )
+        self.modifier = self.blender_object.modifiers.new(
+            name="Subsurface", type="SUBSURF"
+        )
+        self.modifier.levels = Preset.get("atom.viewport_quality")
+        self.modifier.render_levels = Preset.get("atom.render_quality")
 
         self.element = element
         self.name = element
-        self.material = Material(element)
-
+        # self.material = Material(f"{element} - {Preset.get('material.style')}")
+        self.material = Material("element")
         Atom._atoms.append(self)
 
     @classmethod

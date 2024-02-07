@@ -8,13 +8,10 @@ from .periodic_table import PeriodicTable
 
 class Material:
     custom_material_directory = Path(
-        Path(__file__).parent / "resources" / "custom_materials.blend"
+        Path(__file__).parent / "resources" / "materials_user.blend"
     )
     preset_material_directory = Path(
-        Path(__file__).parent / "resources" / "preset_materials.blend"
-    )
-    fallback_file = Path(
-        Path(__file__).parent / "resources" / "fallback_materials.json"
+        Path(__file__).parent / "resources" / "materials.blend"
     )
 
     def __init__(self, name):
@@ -40,13 +37,6 @@ class Material:
 
         material = bpy.data.materials.get(name)
         if material is None:
-            try:
-                Material.load_fallback_material(name)
-            except KeyError:
-                pass
-
-        material = bpy.data.materials.get(name)
-        if material is None:
             print("Material not found. Creating new material.")
             material = Material.create(name)
 
@@ -59,16 +49,6 @@ class Material:
     @material.setter
     def material(self, material):
         self._material = material
-
-    @classmethod
-    def load_fallback_material(cls, name):
-        with open(Material.fallback_file) as file:
-            data = load(file)
-
-        for material in data:
-            if material["name"] == name:
-                Material.create(name, material["properties"])
-                break
 
     @classmethod
     def load_preset_material(cls, name, custom=True):
