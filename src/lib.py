@@ -10,7 +10,10 @@ ANGSTROM = 1
 
 
 def reset():
-    bpy.ops.object.mode_set(mode="OBJECT")
+    try:
+        bpy.ops.object.mode_set(mode="OBJECT")
+    except:
+        pass
     bpy.ops.object.select_all(action="DESELECT")
 
     for object in bpy.context.scene.objects:

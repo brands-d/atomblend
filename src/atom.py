@@ -230,7 +230,7 @@ class Atoms(MeshObject):
                 self._atoms.remove(atom)
 
     def create_bonds(self, periodic=True, exclude_bonds=None):
-        if isinstance(exclude_bonds[0], str):
+        if exclude_bonds is not None and isinstance(exclude_bonds[0], str):
             exclude_bonds = (exclude_bonds,)
         for atom_1, atom_2 in combinations(self.get("all"), 2):
             if (
