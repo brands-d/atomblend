@@ -102,7 +102,7 @@ class Atoms(MeshObject):
         self.collection.link(self.bonds_collection)
 
     @classmethod
-    def ase(cls, atoms, name=None):
+    def ase(cls, atoms, name=None, exclude_bonds=None):
         if name is None:
             name = "New Atoms"
         self = Atoms(name)
@@ -110,11 +110,11 @@ class Atoms(MeshObject):
         for atom in atoms:
             self += Atom.ase(atom)
 
-        self.create_bonds()
+        self.create_bonds(exclude_bonds=exclude_bonds)
         return self
 
     @classmethod
-    def read(cls, filename, name=None, format=None):
+    def read(cls, filename, name=None, format=None, exclude_bonds=None):
         filename = Path(filename)
         if name is None:
             name = filename.stem
@@ -125,7 +125,11 @@ class Atoms(MeshObject):
             atoms = VaspChargeDensity(str(filename)).atoms[-1]
             return Atoms.ase(atoms, name)
         else:
-            return Atoms.ase(read(str(filename), format=format), name=name)
+            return Atoms.ase(
+                read(str(filename), format=format),
+                name=name,
+                exclude_bonds=exclude_bonds,
+            )
 
     def __add__(self, objects):
         if not isinstance(objects, (list, tuple)):
@@ -225,8 +229,15 @@ class Atoms(MeshObject):
             if atom.blender_object is None:
                 self._atoms.remove(atom)
 
-    def create_bonds(self, periodic=True):
+    def create_bonds(self, periodic=True, exclude_bonds=None):
+        if isinstance(exclude_bonds[0], str):
+            exclude_bonds = (exclude_bonds,)
         for atom_1, atom_2 in combinations(self.get("all"), 2):
+            if (
+                exclude_bonds is not None
+                and (atom_1.element, atom_2.element) in exclude_bonds
+            ):
+                continue
             if periodic and self.unit_cell is not None:
                 for x, y, z in (p for p in product((-1, 0, 1), repeat=3)):
                     shift = Vector(

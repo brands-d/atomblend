@@ -1,5 +1,6 @@
-from pathlib import Path
 from json import load
+from os.path import exists
+from pathlib import Path
 
 import bpy
 
@@ -47,19 +48,21 @@ class Material:
 
     @classmethod
     def load_material(cls, name, custom=True):
-        directory = (
-            str(
-                Material.materials_directory
-                / f'materials{"_user" if custom else ""}.blend'
-            )
-            + "/Material/"
+        file = str(
+            Material.materials_directory / f'materials{"_user" if custom else ""}.blend'
         )
+        if not exists(file):
+            raise KeyError(f"Material {name} not found")
 
-        bpy.ops.wm.append(
-            filepath="/Material/" + name,
-            filename=name,
-            directory=directory,
-        )
+        try:
+            bpy.ops.wm.append(
+                filepath="/Material/" + name,
+                filename=name,
+                directory=file + "/Material/",
+            )
+        except RuntimeError:
+            raise KeyError(f"Material {name} not found")
+
         material = bpy.data.materials.get(name)
 
         if material is None:
