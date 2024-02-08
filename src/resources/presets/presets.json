@@ -1,7 +1,9 @@
 {
     "default": {
         "material": {
-            "style": "basic"
+            "atoms": "basic",
+            "chargedensity": "basic"
+            
         },
         "atom": {
             "size": 1,

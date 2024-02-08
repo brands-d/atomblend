@@ -7,14 +7,24 @@ from numpy import diag, tile
 from .lib import flip_normals, marching_cubes_gaussian, marching_cubes_VASP, read_cube
 from .meshobject import MeshObject
 from .collection import Collection
+from .material import Material
+from .preset import Preset
 
 
 class Isosurface(MeshObject):
     def __init__(self, isosurface_object, collection=None):
         self._isosurface_object = isosurface_object
+
         self._collection = collection
         self._link()
         super().__init__()
+
+        remesh_modifier = self.blender_object.modifiers.new(
+            name="Remesh", type="REMESH"
+        )
+        remesh_modifier.mode = "VOXEL"
+        remesh_modifier.use_smooth_shade = True
+        remesh_modifier.voxel_size = 0.2
 
     @classmethod
     def read(cls, filename, name=None, level=None, format=None):
@@ -27,7 +37,7 @@ class Isosurface(MeshObject):
 
         if format == ".cube":
             return Isosurface(CubeIsosurface(filename, name, level))
-        elif format.lower() in ("parchg", "chgcar"):
+        elif format.lower() in ("parchg", "chgcar", "vasp"):
             return Isosurface(VaspIsosurface(filename, name, level))
         else:
             raise ValueError(f"Unsupported file format: {format}")
@@ -127,10 +137,13 @@ class CubeIsosurface:
 class ChargeDensity(Isosurface):
     def __init__(self, *args, **kwargs):
         self.positive = Isosurface.read(*args, **kwargs)
+        self.positive.material = Material(
+            f'ChargeDensity - {Preset.get("material.chargedensity")}'
+        )
 
     @classmethod
     def read(cls, *args, **kwargs):
-        return Wavefunction(*args, **kwargs)
+        return Isosurface(*args, **kwargs)
 
     @property
     def level(self):

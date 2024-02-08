@@ -1,4 +1,5 @@
 import bpy
+import bmesh
 from mathutils import Vector
 from ase.io.cube import read_cube_data
 
@@ -9,6 +10,7 @@ ANGSTROM = 1
 
 
 def reset():
+    bpy.ops.object.mode_set(mode="OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
 
     for object in bpy.context.scene.objects:
@@ -115,3 +117,35 @@ def read_cube(filename):
     data, atoms = read_cube_data(filename)
 
     return data, origin, (x, y, z), atoms.cell
+
+
+def remove_mesh(x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_max=None):
+    for object in bpy.context.scene.objects:
+        if object.type != "MESH":
+            continue
+
+        bpy.context.view_layer.objects.active = object
+        object.select_set(True)
+        bpy.ops.object.mode_set(mode="EDIT")
+
+        mesh = bmesh.from_edit_mesh(object.data)
+        mesh.faces.ensure_lookup_table()
+        mesh.edges.ensure_lookup_table()
+        mesh.verts.ensure_lookup_table()
+        verts_to_delete = []
+        for v in mesh.verts:
+            co = object.matrix_world @ v.co
+            if (
+                (x_min is not None and co.x > x_min)
+                or (x_max is not None and co.x < x_max)
+                or (y_min is not None and co.y > y_min)
+                or (y_max is not None and co.y < y_max)
+                or (z_min is not None and co.z > z_min)
+                or (z_max is not None and co.z < z_max)
+            ):
+                verts_to_delete.append(v)
+        bmesh.ops.delete(mesh, geom=verts_to_delete, context="VERTS")
+        bmesh.update_edit_mesh(object.data)
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        object.select_set(False)

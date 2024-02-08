@@ -42,7 +42,7 @@ class Atom(MeshObject):
         self.element = element
         self.name = element
         self.material = Material(
-            f'{PeriodicTable[element].name} - {Preset.get("material.style")}'
+            f'{PeriodicTable[element].name} - {Preset.get("material.atoms")}'
         )
         Atom._atoms.append(self)
 

@@ -3,6 +3,8 @@ from mathutils import Vector
 from math import acos, atan2, degrees
 
 from .meshobject import MeshObject
+from .material import Material
+from .preset import Preset
 
 
 class Bond(MeshObject):
@@ -22,7 +24,7 @@ class Bond(MeshObject):
             degrees(atan2(distance[1], distance[0])),
         )
         self.blender_object.scale = (0.1, 0.1, distance.length / 2)
-
+        self.material = Material(f'Bond - {Preset.get("material.bonds")}')
         self.name = f"{atom_1.name}-{atom_2.name}"
 
     @property

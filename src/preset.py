@@ -5,12 +5,16 @@ from json import load
 class Preset:
     presets_directory = Path(__file__).parent / "resources" / "presets"
 
-    preset = load(open(presets_directory / "presets.json"))["default"]
-    preset.update(load(open(presets_directory / "presets_user.json")))
+    presets = load(open(presets_directory / "presets.json"))
+    presets.update(load(open(presets_directory / "presets_user.json")))
+    preset = "default"
 
     """
         material:
-            style: "basic", "standard", "eggshell", "plastic", "metallic", "magnetics"
+            atoms: "basic", "standard", "eggshell", "plastic", "metallic",
+            "magnetics"
+            chargedensity: "basic"
+            bonds:
         atom:
             size: float
         mesh:
@@ -21,14 +25,18 @@ class Preset:
 
     @classmethod
     def load(cls, name):
-        Preset.preset = load(open(Preset.presets_directory))[name]
+        Preset.preset = name
+        Preset.presets = load(open(Preset.presets_directory / "presets.json"))
+        Preset.presets.update(
+            load(open(Preset.presets_directory / "presets_user.json"))
+        )
 
     @classmethod
     def get(cls, setting):
         group, setting = setting.split(".")
-        return Preset.preset[group][setting]
+        return Preset.presets[Preset.preset][group][setting]
 
     @classmethod
     def set(cls, setting, value):
         group, setting = setting.split(".")
-        Preset.preset[group][setting] = value
+        Preset.presets[Preset.preset][group][setting] = value

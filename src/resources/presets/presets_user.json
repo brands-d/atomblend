@@ -1,2 +1,15 @@
 {
+    "Baranowski2024": {
+    "material": {
+        "atoms": "Baranowski2024",
+        "chargedensity": "Baranowski2024",
+        "bonds": "Baranowski2024"        
+    },
+    "atom": {
+        "size": 1,
+        "smooth": true,
+        "viewport_quality": 1,
+        "render_quality": 2
+    }
+}
 }
