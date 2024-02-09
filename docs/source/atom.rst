@@ -1,7 +1,7 @@
-Asset Class
-============
+Atom Class
+==========
 
-.. automodule:: src.asset
+.. automodule:: src.atom
    :members:
    :special-members:
    :show-inheritance:

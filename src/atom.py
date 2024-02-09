@@ -1,10 +1,11 @@
 from itertools import combinations, product
 from pathlib import Path
+from typing import Union
 
-import bpy
+import bpy  # type: ignore
 from ase.calculators.vasp import VaspChargeDensity
 from ase.io import read
-from mathutils import Vector
+from mathutils import Vector  # type: ignore
 from numpy import diag, ndarray
 
 from .bond import Bond
@@ -17,13 +18,32 @@ from .preset import Preset
 
 
 class Atom(MeshObject):
+    """
+    Represents a single atom.
+
+    Attributes:
+        covalent_radius (float): The covalent radius of the atom. This is used to determine the bond length.
+        element (str): The chemical symbol of the atom.
+    """
 
     _atoms = []
 
-    def __init__(self, element="X"):
-        radius = PeriodicTable[element].radius
-        self.covalent_radius = PeriodicTable[element].covalent_radius
+    def __init__(self, element: str = "X") -> None:
+        """
+        Initializes a new instance of the Atom class.
 
+        The atom is created as a uv sphere with a radius based on the radius
+        defined in the :mod:`PeriodicTable`.
+
+        Args:
+            element (str, optional): The chemical symbol of the atom. Default: "X"
+
+        Examples:
+            >>> # This will create a new atom hydrogen atom.
+            >>> atom = Atom("H")
+        """
+
+        radius = PeriodicTable[element].radius
         bpy.ops.mesh.primitive_uv_sphere_add(
             radius=radius * Preset.get("atom.size"), segments=16, ring_count=8
         )
@@ -39,6 +59,7 @@ class Atom(MeshObject):
         self.modifier.levels = Preset.get("atom.viewport_quality")
         self.modifier.render_levels = Preset.get("atom.render_quality")
 
+        self.covalent_radius = PeriodicTable[element].covalent_radius
         self.element = element
         self.name = element
         self.material = Material(
@@ -47,7 +68,21 @@ class Atom(MeshObject):
         Atom._atoms.append(self)
 
     @classmethod
-    def ase(cls, atom):
+    def ase(cls, atom: "ase.Atom") -> "Atom":
+        """
+        Creates an Atom instance from an ASE Atom object.
+
+        Args:
+            atom (ase.Atom): The ASE Atom object.
+
+        Returns:
+            Atom: The created Atom instance.
+
+        Examples:
+            >>> # This will create a new atom hydrogen atom.
+            >>> atom = Atom.ase(ase.Atom("H"))
+        """
+
         try:
             self = Atom(str(atom.symbols))
             self.location = atom.positions[0]
@@ -58,7 +93,35 @@ class Atom(MeshObject):
         return self
 
     @classmethod
-    def get(cls, filter=None):
+    def get(cls, filter: Union[str, callable] = None) -> list["Atom"]:
+        """
+        Retrieves a list of atoms existing in the entire scene based on the
+        specified filter.
+
+        The filter can be a simple element symbol or a callable that takes an
+        Atom object as an argument and returns a boolean.
+
+        Default returns all atoms.
+
+        Note:
+            Use `and` and `or` to combine multiple conditions into complex
+            filters.
+
+        Args:
+            filter (str | callable, optional): The filter to apply. Default: None.
+
+        Returns:
+            list[Atom]: The list of atoms that match the filter.
+
+        Examples:
+            >>> # This will return all atoms in the scene.
+            >>> Atom.get()
+            >>> # This will return all carbon atoms in the scene.
+            >>> Atom.get("C")
+            >>> # This will return all atoms with a z-coordinate greater than 10.
+            >>> Atom.get(lambda atom: atom.location[2] > 10)
+        """
+
         Atom._clean()
 
         if filter is None or filter == "all":
@@ -70,11 +133,26 @@ class Atom(MeshObject):
 
     @classmethod
     def _clean(cls):
+        """
+        Removes atoms that have been deleted from the scene via UI.
+        """
+
         for atom in cls._atoms:
             if atom.blender_object is None:
                 cls._atoms.remove(atom)
 
-    def __add__(self, other):
+    def __add__(self, other: Union["Atom", "Atoms"]) -> "Atoms":
+        """
+        Adds two atoms together to form a new `Atoms` object or will add the
+        atom to an existing atoms object.
+
+        Args:
+            other (Atom | Atoms): The other atom or atoms collection to add.
+
+        Returns:
+            Atoms: The resulting atoms collection.
+        """
+
         if isinstance(other, Atom):
             atoms = Atoms("New Atoms")
             atoms += self
@@ -84,13 +162,40 @@ class Atom(MeshObject):
             other += self
             return other
 
-    def delete(self):
+    def delete(self) -> None:
+        """
+        Deletes the atom.
+        """
+
         self._atoms.remove(self)
         super().delete()
 
 
 class Atoms(MeshObject):
-    def __init__(self, name):
+    """
+    Represents a collection of atoms in a 3D scene.
+
+    Attributes:
+        name (str): The name of the atoms collection.
+        unit_cell (ndarray or None): The unit cell of the atoms collection.
+        scale (float): The scale of the atoms collection.
+        material (Material): The material of the atoms collection.
+        origin (Vector): The origin of the atoms collection.
+        location (Vector): The location of the atoms collection.
+    """
+
+    def __init__(self, name: str) -> None:
+        """
+        Initializes a new instance of the Atoms class.
+
+        Args:
+            name (str): The name of the atoms collection.
+
+        Examples:
+            >>> # This will create a new atoms collection.
+            >>> atoms = Atoms("Water")
+        """
+
         self._atoms = []
         self._unit_cell = None
         self.copies = []
@@ -102,7 +207,30 @@ class Atoms(MeshObject):
         self.collection.link(self.bonds_collection)
 
     @classmethod
-    def ase(cls, atoms, name=None, exclude_bonds=None):
+    def ase(
+        cls,
+        atoms: "ase.Atoms",
+        name: str = None,
+        exclude_bonds: Union[list, tuple] = None,
+    ):
+        """
+        Creates an Atoms instance from an ASE Atoms object.
+
+        Args:
+            atoms (ase.Atoms): The ASE Atoms object.
+            name (str, optional): The name of the atoms collection. Defaults to
+            None.
+            exclude_bonds (list, optional): A list of tuples of elements
+            symbols to exclude from bond creation. Defaults to None.
+
+        Returns:
+            Atoms: The created Atoms instance.
+
+        Examples:
+            >>> # This will create a new atoms collection from an ASE Atoms object.
+            >>> atoms = Atoms.ase(ase.Atoms("H2O"))
+        """
+
         if name is None:
             name = "New Atoms"
         self = Atoms(name)
@@ -114,7 +242,31 @@ class Atoms(MeshObject):
         return self
 
     @classmethod
-    def read(cls, filename, name=None, format=None, exclude_bonds=None):
+    def read(
+        cls,
+        filename: Union[str, Path],
+        name: str = None,
+        format: str = None,
+        exclude_bonds: Union[list, tuple] = None,
+    ):
+        """
+        Reads an atoms collection from a file.
+
+        Args:
+            filename (str): The path to the file.
+            name (str, optional): The name of the atoms collection. Defaults to None.
+            format (str, optional): The file format. Defaults to None.
+            exclude_bonds (list, optional): A list of tuples of elements
+            symbols to exclude from bond creation. Defaults to None.
+
+        Returns:
+            Atoms: The read atoms collection.
+
+        Examples:
+            >>> # This will read an atoms collection from a file. Does not create bonds between substrate atoms.
+            >>> atoms = Atoms.read("POSCAR", exclude_bonds=("Ag", "Ag"))
+        """
+
         filename = Path(filename)
         if name is None:
             name = filename.stem
@@ -132,6 +284,16 @@ class Atoms(MeshObject):
             )
 
     def __add__(self, objects):
+        """
+        Adds an atom or bond to the atoms collection.
+
+        Args:
+            objects (Atom or Bond or list[Atom or Bond]): The atom or bond, or a list of atoms or bonds to add.
+
+        Returns:
+            Atoms: The updated atoms collection.
+        """
+
         if not isinstance(objects, (list, tuple)):
             objects = (objects,)
         for object in objects:
@@ -145,26 +307,63 @@ class Atoms(MeshObject):
 
     @property
     def atoms(self):
+        """
+        Gets the atoms collection.
+
+        Returns:
+            Collection: The atoms collection.
+        """
+
         return self.atoms_collection
 
     @property
     def bonds(self):
+        """
+        Gets the bonds collection.
+
+        Returns:
+            Collection: The bonds collection.
+        """
         return self.bonds_collection
 
     @property
     def name(self):
+        """
+        Gets or sets the name of the atoms collection.
+
+        Returns:
+            str: The name of the atoms collection.
+        """
         return self.collection.name
 
     @name.setter
     def name(self, name):
+        """
+        Sets the name of the atoms collection.
+
+        Args:
+            name (str): The name of the atoms collection.
+        """
         self.collection.name = name
 
     @property
     def unit_cell(self):
+        """
+        Gets or sets the unit cell of the atoms collection.
+
+        Returns:
+            ndarray or None: The unit cell of the atoms collection.
+        """
         return self._unit_cell
 
     @unit_cell.setter
     def unit_cell(self, cell):
+        """
+        Sets the unit cell of the atoms collection.
+
+        Args:
+            cell (ndarray or list or tuple or Vector): The unit cell of the atoms collection.
+        """
         if isinstance(cell[0], (ndarray, tuple, Vector, list)):
             self._unit_cell = cell
         else:
@@ -172,41 +371,98 @@ class Atoms(MeshObject):
 
     @property
     def scale(self):
+        """
+        Gets or sets the scale of the atoms collection.
+
+        Returns:
+            float: The scale of the atoms collection.
+        """
         return (self.atoms_collection.scale, self.bonds_collection.scale)
 
     @scale.setter
     def scale(self, scale):
+        """
+        Sets the scale of the atoms collection.
+
+        Args:
+            scale (float): The scale of the atoms collection.
+        """
         self.atoms_collection.scale = scale
         self.bonds_collection.scale = scale
 
     @property
     def material(self):
+        """
+        Gets or sets the material of the atoms collection.
+
+        Returns:
+            Material: The material of the atoms collection.
+        """
         return (self.atoms_collection.material, self.bonds_collection.material)
 
     @material.setter
     def material(self, material):
+        """
+        Sets the material of the atoms collection.
+
+        Args:
+            material (Material): The material of the atoms collection.
+        """
         self.atoms_collection.material = material
         self.bonds_collection.material = material
 
     @property
     def origin(self):
+        """
+        Gets or sets the origin of the atoms collection.
+
+        Returns:
+            Vector: The origin of the atoms collection.
+        """
         return (self.atoms_collection.origin, self.bonds_collection.origin)
 
     @origin.setter
     def origin(self, origin):
+        """
+        Sets the origin of the atoms collection.
+
+        Args:
+            origin (Vector): The origin of the atoms collection.
+        """
         self.atoms_collection.origin = origin
         self.bonds_collection.origin = origin
 
     @property
     def location(self):
+        """
+        Gets or sets the location of the atoms collection.
+
+        Returns:
+            Vector: The location of the atoms collection.
+        """
         return (self.atoms_collection.location, self.bonds_collection.location)
 
     @location.setter
     def location(self, location):
+        """
+        Sets the location of the atoms collection.
+
+        Args:
+            location (Vector): The location of the atoms collection.
+        """
         self.atoms_collection.location = location
         self.bonds_collection.location = location
 
     def get(self, filter=None):
+        """
+        Retrieves a list of atoms based on the specified filter.
+
+        Args:
+            filter (str or callable, optional): The filter to apply. Defaults to None.
+
+        Returns:
+            list[Atom]: The list of atoms that match the filter.
+        """
         self.clean()
 
         if filter is None or filter == "all":
@@ -217,19 +473,47 @@ class Atoms(MeshObject):
             return [atom for atom in self._atoms if filter(atom)]
 
     def move(self, translation):
+        """
+        Moves the atoms collection by the specified translation.
+
+        Args:
+            translation (Vector): The translation to apply.
+        """
         self.atoms_collection.move(translation)
         self.bonds_collection.move(translation)
 
     def rotate(self, rotation, origin=None):
+        """
+        Rotates the atoms collection by the specified rotation.
+
+        Args:
+            rotation (Quaternion or Euler or Matrix): The rotation to apply.
+            origin (Vector, optional): The origin of the rotation. Defaults to None.
+        """
         self.atoms_collection.rotate(rotation, origin)
         self.bonds_collection.rotate(rotation, origin)
 
     def clean(self):
+        """
+        Removes atoms that no longer have a Blender object associated with them.
+        """
         for atom in self._atoms:
             if atom.blender_object is None:
                 self._atoms.remove(atom)
 
-    def create_bonds(self, periodic=True, exclude_bonds=None):
+    def create_bonds(
+        self, periodic: bool = True, exclude_bonds: Union[list, tuple] = None
+    ):
+        """
+        Creates bonds between atoms in the atoms collection.
+
+        Args:
+            periodic (bool, optional): Whether to consider periodic boundaries.
+            Defaults to True.
+            exclude_bonds (list, optional): A list of tuples of elements
+            symbols to exclude from bond creation. Defaults to None.
+        """
+
         if exclude_bonds is not None and isinstance(exclude_bonds[0], str):
             exclude_bonds = (exclude_bonds,)
         for atom_1, atom_2 in combinations(self.get("all"), 2):
@@ -262,6 +546,13 @@ class Atoms(MeshObject):
                     self += Bond(atom_1, atom_2)
 
     def repeat(self, repetitions):
+        """
+        Creates copies of the atoms collection based on the specified repetitions.
+
+        Args:
+            repetitions (tuple[int, int, int]): The number of repetitions in each direction.
+        """
+
         if repetitions == (0, 0, 0):
             return
         else:
@@ -289,6 +580,16 @@ class Atoms(MeshObject):
                         self.copies.append(copy)
 
     def _new_instance_to_scene(self, name):
+        """
+        Creates a new instance of the atoms collection in the scene.
+
+        Args:
+            name (str): The name of the instance.
+
+        Returns:
+            Object: The created instance.
+        """
+
         instance = Object()
         instance.blender_object = bpy.data.objects.new(name=name, object_data=None)
         instance.blender_object.instance_type = "COLLECTION"
@@ -299,7 +600,17 @@ class Atoms(MeshObject):
 
 
 class _DummyAtom:
+    """
+    Represents a dummy atom used for creating bonds in periodic systems.
+    """
+
     def __init__(self, atom):
+        """
+        Initializes a new instance of the _DummyAtom class.
+
+        Args:
+            atom (Atom): The original atom.
+        """
         self.position = atom.position
         self.covalent_radius = atom.covalent_radius
         self.name = atom.name
