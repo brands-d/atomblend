@@ -11,6 +11,9 @@ ANGSTROM = 1
 
 
 def reset():
+    """
+    Resets the Blender scene by removing all objects, meshes, and collections.
+    """
     try:
         bpy.ops.object.mode_set(mode="OBJECT")
     except:
@@ -30,6 +33,15 @@ def reset():
 
 
 def render(filepath=None, show=True, mode="quality"):
+    """
+    Renders the current scene using the specified rendering mode and saves the image to a file.
+
+    Parameters:
+    - filepath (str): The path to save the rendered image. If None, the image will not be saved.
+    - show (bool): Whether to display the rendered image in a separate window.
+    - mode (str): The rendering mode to use. Options are "fast", "performance", "eevee" for fast rendering,
+      and "slow", "quality", "beautiful", "cycles" for high-quality rendering.
+    """
     original_display_type = bpy.context.preferences.view.render_display_type
     if show:
         bpy.context.preferences.view.render_display_type = "WINDOW"
@@ -57,6 +69,18 @@ def render(filepath=None, show=True, mode="quality"):
 
 
 def marching_cubes_VASP(density, unit_cell, name, level=None):
+    """
+    Generates a mesh using the marching cubes algorithm from VASP density data.
+
+    Parameters:
+    - density (ndarray): The density data.
+    - unit_cell (tuple): The unit cell dimensions.
+    - name (str): The name of the mesh object.
+    - level (float): The isosurface level. If None, the default level will be used.
+
+    Returns:
+    - object: The generated mesh object.
+    """
     vertices, faces, *_ = mc(density, level=level)
     vertices = [
         _vertex_transform(vertex, unit_cell, density.shape) for vertex in vertices
@@ -70,6 +94,19 @@ def marching_cubes_VASP(density, unit_cell, name, level=None):
 
 
 def marching_cubes_gaussian(density, origin, axes, name, level=None):
+    """
+    Generates a mesh using the marching cubes algorithm from Gaussian density data.
+
+    Parameters:
+    - density (ndarray): The density data.
+    - origin (Vector): The origin of the density data.
+    - axes (tuple): The axes vectors of the density data.
+    - name (str): The name of the mesh object.
+    - level (float): The isosurface level. If None, the default level will be used.
+
+    Returns:
+    - object: The generated mesh object.
+    """
     vertices, faces, *_ = mc(density, level=level)
     vertices = [
         [Vector(vertex).dot(Vector(axes[i])) + origin[i] for i in range(3)]
@@ -84,6 +121,17 @@ def marching_cubes_gaussian(density, origin, axes, name, level=None):
 
 
 def _vertex_transform(vertex, unit_cell, shape):
+    """
+    Transforms a vertex coordinate based on the unit cell dimensions and shape of the density data.
+
+    Parameters:
+    - vertex (tuple): The vertex coordinate.
+    - unit_cell (tuple): The unit cell dimensions.
+    - shape (tuple): The shape of the density data.
+
+    Returns:
+    - tuple: The transformed vertex coordinate.
+    """
     new = (vertex[0] - 1) * unit_cell[0] / shape[0]
     new += (vertex[1] - 1) * unit_cell[1] / shape[1]
     new += (vertex[2] - 1) * unit_cell[2] / shape[2]
@@ -91,6 +139,12 @@ def _vertex_transform(vertex, unit_cell, shape):
 
 
 def flip_normals(object):
+    """
+    Flips the normals of a mesh object.
+
+    Parameters:
+    - object (object): The mesh object to flip the normals of.
+    """
     bpy.context.view_layer.objects.active = object
     bpy.ops.object.mode_set(mode="OBJECT")
     object = bpy.context.active_object
@@ -108,6 +162,15 @@ def flip_normals(object):
 
 
 def read_cube(filename):
+    """
+    Reads a Gaussian cube file and returns the density data, origin, axes, and unit cell.
+
+    Parameters:
+    - filename (str): The path to the cube file.
+
+    Returns:
+    - tuple: The density data, origin, axes, and unit cell.
+    """
     with open(filename, "r") as file:
         lines = file.readlines()
 
@@ -124,6 +187,17 @@ def read_cube(filename):
 
 
 def remove_mesh(x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_max=None):
+    """
+    Removes mesh objects within the specified coordinate range.
+
+    Parameters:
+    - x_min (float): The minimum x-coordinate.
+    - x_max (float): The maximum x-coordinate.
+    - y_min (float): The minimum y-coordinate.
+    - y_max (float): The maximum y-coordinate.
+    - z_min (float): The minimum z-coordinate.
+    - z_max (float): The maximum z-coordinate.
+    """
     for object in bpy.context.scene.objects:
         if object.type != "MESH":
             continue
@@ -156,6 +230,12 @@ def remove_mesh(x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_ma
 
 
 def get_console():
+    """
+    Retrieves the Blender Python console.
+
+    Returns:
+    - object: The Blender Python console object.
+    """
     for window in bpy.context.window_manager.windows:
         for area in window.screen.areas:
             if area.type == "CONSOLE":
@@ -167,6 +247,9 @@ def get_console():
 
 
 def interactive():
+    """
+    Enables interactive mode by updating the console locals with the current frame's locals.
+    """
     frame = currentframe()
     try:
         console = get_console()

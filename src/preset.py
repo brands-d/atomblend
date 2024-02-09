@@ -11,10 +11,11 @@ class Preset:
 
     """
         material:
-            atoms: "basic", "standard", "eggshell", "plastic", "metallic" "magnetics"
-            chargedensity: "basic", "standard", "eggshell", "plastic", "metallic",
-            "magnetics"
-            bonds:
+            atoms: "basic", "standard", "eggshell", "plastic", "metallic", "magnetics"
+            chargedensity: "basic", "standard", "eggshell", "plastic",
+            "metallic", "magnetics"
+            bonds: "basic", "standard", "eggshell", "plastic",
+            "metallic", "magnetics"
         atom:
             size: float
         mesh:
