@@ -20,21 +20,10 @@ class Material:
         material = bpy.data.materials.get(name)
         if material is None:
             try:
-                Material.load_material(name)
+                material = Material.load(name)
             except KeyError:
-                pass
-
-        material = bpy.data.materials.get(name)
-        if material is None:
-            try:
-                Material.load_material(name, custom=False)
-            except KeyError:
-                pass
-
-        material = bpy.data.materials.get(name)
-        if material is None:
-            print("Material not found. Creating new material.")
-            material = Material.create(name)
+                print("Material not found. Creating new material.")
+                material = Material.create(name)
 
         self._material = material
 
@@ -47,28 +36,14 @@ class Material:
         self._material = material
 
     @classmethod
-    def load_material(cls, name, custom=True):
-        file = str(
-            Material.materials_directory / f'materials{"_user" if custom else ""}.blend'
-        )
-        if not exists(file):
-            raise KeyError(f"Material {name} not found")
+    def load(cls, name):
 
         try:
-            bpy.ops.wm.append(
-                filepath="/Material/" + name,
-                filename=name,
-                directory=file + "/Material/",
-            )
-        except RuntimeError:
-            raise KeyError(f"Material {name} not found")
-
-        material = bpy.data.materials.get(name)
-
-        if material is None:
-            raise KeyError(f"Material {name} not found")
-        else:
-            return material
+            file = str(Material.materials_directory / f"materials.blend")
+            return Material._load(file, name)
+        except KeyError:
+            file = str(Material.materials_directory / f"materials.blend")
+            return Material._load(file, name)
 
     @classmethod
     def create(cls, name, properties={}):
@@ -83,3 +58,23 @@ class Material:
                 node.inputs[key].default_value = value
             except KeyError:
                 pass
+
+    @classmethod
+    def _load(cls, file, name):
+        if not exists(file):
+            raise RuntimeError(f"{file} not found")
+
+        try:
+            bpy.ops.wm.append(
+                filepath="/Material/" + name,
+                filename=name,
+                directory=file + "/Material/",
+            )
+        except RuntimeError:
+            raise KeyError(f"Material {name} not found")
+
+        material = bpy.data.materials.get(name)
+        if material is None:
+            raise KeyError(f"Material {name} not found")
+        else:
+            return material
