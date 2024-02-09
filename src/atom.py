@@ -174,14 +174,6 @@ class Atom(MeshObject):
 class Atoms(MeshObject):
     """
     Represents a collection of atoms in a 3D scene.
-
-    Attributes:
-        name (str): The name of the atoms collection.
-        unit_cell (ndarray or None): The unit cell of the atoms collection.
-        scale (float): The scale of the atoms collection.
-        material (Material): The material of the atoms collection.
-        origin (Vector): The origin of the atoms collection.
-        location (Vector): The location of the atoms collection.
     """
 
     def __init__(self, name: str) -> None:

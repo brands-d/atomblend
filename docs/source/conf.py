@@ -32,15 +32,25 @@ exclude_patterns = []
 autodoc_mock_imports = [
     "numpy",
     "bpy",
+    "bmesh",
     "ase",
     "skimage",
     "math",
     "mathutils",
     "bpy_extras",
+    "console_python",
 ]
 autodoc_typehints = "none"
 autodoc_member_order = "groupwise"
 
+html_sidebars = {
+    "**": [
+        "globaltoc.html",
+        "relations.html",  # Show previous and next files
+        "sourcelink.html",  # Show a link to the source on GitHub/GitLab/etc.
+        "searchbox.html",  # Show a search box
+    ]
+}
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 

@@ -1,7 +1,7 @@
 Asset Class
 ============
 
-.. automodule:: src.asset
+.. autoclass:: src.asset.Asset
    :members:
    :special-members:
    :show-inheritance:

@@ -18,16 +18,6 @@ class Isosurface(MeshObject):
     Args:
         isosurface_object (object): The isosurface object.
         collection (Collection, optional): The collection to which the isosurface object belongs.
-
-    Attributes:
-        blender_object (object): The Blender object associated with the isosurface.
-        level (float): The isosurface level.
-        name (str): The name of the isosurface object.
-
-    Methods:
-        read(cls, filename, name=None, level=None, format=None): Reads an isosurface from a file.
-        repeat(repetitions): Repeats the isosurface object.
-        update(): Updates the isosurface object.
     """
 
     def __init__(self, isosurface_object, collection=None):
