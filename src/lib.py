@@ -1,9 +1,10 @@
-import bpy
 import bmesh
-from mathutils import Vector
+import bpy
+import console_python
 from ase.io.cube import read_cube_data
-
+from mathutils import Vector
 from skimage.measure import marching_cubes as mc
+from inspect import currentframe
 
 BOHR = 0.529177
 ANGSTROM = 1
@@ -152,3 +153,23 @@ def remove_mesh(x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_ma
         bpy.ops.object.mode_set(mode="OBJECT")
 
         object.select_set(False)
+
+
+def get_console():
+    for window in bpy.context.window_manager.windows:
+        for area in window.screen.areas:
+            if area.type == "CONSOLE":
+                for region in area.regions:
+                    if region.type == "WINDOW":
+                        console = console_python.get_console(hash(region))
+                        if console:
+                            return console[0]
+
+
+def interactive():
+    frame = currentframe()
+    try:
+        console = get_console()
+        console.locals.update(frame.f_back.f_locals)
+    finally:
+        del frame

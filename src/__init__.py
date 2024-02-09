@@ -8,7 +8,7 @@ from .camera import Camera
 from .collection import Collection
 from .imports import *
 from .isosurface import ChargeDensity, Wavefunction
-from .lib import render, reset, remove_mesh
+from .lib import render, reset, remove_mesh, interactive
 from .light import Light
 from .material import Material
 from .object import Object
