@@ -1,5 +1,5 @@
 Isosurfaces
-===========
+^^^^^^^^^^^
 
 .. autoclass:: src.isosurface.ChargeDensity
    :members:

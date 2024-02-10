@@ -1,5 +1,5 @@
 Atoms, Molecules
-================
+^^^^^^^^^^^^^^^^
 
 .. autoclass:: src.atom.Atom
    :members:

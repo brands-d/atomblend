@@ -1,5 +1,5 @@
 Presets
-=======
+^^^^^^^
 
 .. autoclass:: src.preset.Preset
    :members:

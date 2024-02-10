@@ -40,7 +40,7 @@ def render(filepath=None, show=True, mode="quality"):
     - filepath (str): The path to save the rendered image. If None, the image will not be saved.
     - show (bool): Whether to display the rendered image in a separate window.
     - mode (str): The rendering mode to use. Options are "fast", "performance", "eevee" for fast rendering,
-      and "slow", "quality", "beautiful", "cycles" for high-quality rendering.
+    and "slow", "quality", "beautiful", "cycles" for high-quality rendering.
     """
     original_display_type = bpy.context.preferences.view.render_display_type
     if show:

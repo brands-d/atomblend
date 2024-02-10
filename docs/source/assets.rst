@@ -1,5 +1,5 @@
 Asset Class
-============
+^^^^^^^^^^^
 
 .. autoclass:: src.asset.Asset
    :members:
