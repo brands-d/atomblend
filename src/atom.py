@@ -15,6 +15,7 @@ from .meshobject import MeshObject
 from .object import Object
 from .periodic_table import PeriodicTable
 from .preset import Preset
+from .lib import get_frame_range, set_frame_range
 
 
 class Atom(MeshObject):
@@ -268,6 +269,20 @@ class Atoms(MeshObject):
         ):
             atoms = VaspChargeDensity(str(filename)).atoms[-1]
             return Atoms.ase(atoms, name)
+        elif filename.stem == "XDATCAR":
+            final_frame = -1
+            for frame, aux in enumerate(
+                read(str(filename), format="vasp-xdatcar", index=":")
+            ):
+                final_frame = frame
+                if frame == 0:
+                    atoms = Atoms.ase(aux, name, exclude_bonds=exclude_bonds)
+
+                atoms.insert_keyframe("location", aux.positions, frame)
+
+            if get_frame_range()[-1] < final_frame:
+                set_frame_range(get_frame_range()[0], frame)
+            return atoms
         else:
             return Atoms.ase(
                 read(str(filename), format=format),
@@ -570,6 +585,24 @@ class Atoms(MeshObject):
                             + z * Vector(self.unit_cell[2])
                         )
                         self.copies.append(copy)
+
+    def insert_keyframe(self, property, values, frame, update_bonds=True):
+        """
+        Inserts a keyframe for the specified property at the specified frame.
+
+        Args:
+            property (str): The name of the property to animate.
+            values (float): The values of the property at the keyframe.
+            frame (int): The frame at which to insert the keyframe.
+        """
+        for atom, value in zip(self._atoms, values):
+            atom.insert_keyframe(property, value, frame)
+
+        if update_bonds:
+            for bond in self.bonds:
+                bond.update()
+                bond.insert_keyframe("location", bond.location, frame)
+                bond.insert_keyframe("rotation", bond.rotation, frame)
 
     def _new_instance_to_scene(self, name):
         """

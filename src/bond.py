@@ -18,19 +18,12 @@ class Bond(MeshObject):
         """
         self.atom_1 = atom_1
         self.atom_2 = atom_2
-        distance = Vector(atom_1.position) - Vector(atom_2.position)
-        location = Vector(atom_1.position) - distance / 2
 
-        bpy.ops.mesh.primitive_cylinder_add(location=location)
+        bpy.ops.mesh.primitive_cylinder_add()
         super().__init__()
 
-        self.position = location
-        self.rotation = (
-            0,
-            degrees(acos(distance[2] / distance.length)),
-            degrees(atan2(distance[1], distance[0])),
-        )
-        self.blender_object.scale = (0.1, 0.1, distance.length / 2)
+        self.update()
+        self.blender_object.scale[:2] = (0.1, 0.1)
         self.material = Material(f'Bond - {Preset.get("material.bonds")}')
         self.name = f"{atom_1.name}-{atom_2.name}"
 
@@ -57,3 +50,15 @@ class Bond(MeshObject):
             scale = [scale] * 2
         scale = [s * a for s, a in zip(self.scale, scale)]
         self.blender_object.scale = [scale[0], scale[1], self.blender_object.scale[2]]
+
+    def update(self):
+        distance = Vector(self.atom_1.position) - Vector(self.atom_2.position)
+        location = Vector(self.atom_1.position) - distance / 2
+
+        self.position = location
+        self.rotation = (
+            0,
+            degrees(acos(distance[2] / distance.length)),
+            degrees(atan2(distance[1], distance[0])),
+        )
+        self.blender_object.scale[2] = distance.length / 2

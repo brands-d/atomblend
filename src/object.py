@@ -2,6 +2,8 @@ import bpy
 from math import degrees, radians
 from mathutils import Euler, Vector
 
+from .lib import get_frame, set_frame
+
 
 class Object:
     """
@@ -192,6 +194,22 @@ class Object:
             self.rotation = Vector(rotation) + Vector(self.rotation)
             bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY")
             bpy.context.scene.cursor.location = previous_cursor_location
+
+    def insert_keyframe(self, property, value, frame):
+        """
+        Inserts a keyframe for the specified property at the specified frame.
+
+        Args:
+            property (str): The name of the property to animate.
+            value (float): The value of the property at the keyframe.
+            frame (int): The frame at which to insert the keyframe.
+        """
+        if property in ("location", "position"):
+            self.location = value
+            self.blender_object.keyframe_insert(data_path="location", frame=frame)
+        elif property in ("rotation"):
+            self.rotation = value
+            self.blender_object.keyframe_insert(data_path="rotation_euler", frame=frame)
 
     def delete(self):
         """
