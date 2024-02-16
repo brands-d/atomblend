@@ -30,6 +30,16 @@ Presets:
          * smooth: (bool)
          * viewport_quality: (int)
          * render_quality: (int)
+      
+   * camera
+      
+      * render_engine: (str), {cycles, eevee}
+      * resolution: ([int, int])
+
+   * blender
+
+      * viewport_engine: (str), {cycles, eevee}
+      * wireframe: (bool)
 
 .. autoclass:: src.preset.Preset
    :members:

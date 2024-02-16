@@ -57,15 +57,19 @@ class Preset:
         preset = Preset.preset if preset is None else preset
         Preset._reload_presets()
 
+        # Use default as backup if a property is not defined
+        aux = Preset.presets["default"]
+        aux = deep_dict_update(aux, Preset.presets[preset])
+
         setting = setting.split(".")
         if len(setting) == 2:
             # No subgroup
             group, property = setting
-            return Preset.presets[preset][group][property]
+            return aux[group][property]
         elif len(setting) == 3:
             # Subgroup
             group, subgroup, property = setting
-            return Preset.presets[preset][group][subgroup][property]
+            return aux[group][subgroup][property]
         else:
             raise ValueError("Wrong setting format. Use: group.[subgroup.]property")
 
@@ -90,11 +94,15 @@ class Preset:
         if len(setting) == 2:
             # No subgroup
             group, property = setting
-            user_preset.update({preset: {group: {property: value}}})
+            user_preset = deep_dict_update(
+                user_preset, {preset: {group: {property: value}}}
+            )
         elif len(setting) == 3:
             # Subgroup
             group, subgroup, property = setting
-            user_preset.update({preset: {group: {subgroup: {property: value}}}})
+            user_preset = deep_dict_update(
+                user_preset, {preset: {group: {subgroup: {property: value}}}}
+            )
         else:
             raise ValueError("Wrong setting format. Use: group.[subgroup.]property")
 
@@ -108,7 +116,7 @@ class Preset:
         # Load default presets
         cls.presets = Preset._read_default_preset_file()
         # Update with user presets
-        cls.presets.update(Preset._read_user_preset_file())
+        cls.presets = deep_dict_update(cls.presets, Preset._read_user_preset_file())
 
     @classmethod
     def _read_default_preset_file(cls):
@@ -138,6 +146,15 @@ class Preset:
             )
             open(Preset.presets_user_file, "w").write("{}")
             return {}
+
+
+def deep_dict_update(d, u):
+    for k, v in u.items():
+        if isinstance(v, dict):
+            d[k] = deep_dict_update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
 
 
 Preset.load("default")

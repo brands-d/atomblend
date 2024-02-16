@@ -10,6 +10,7 @@ from skimage.measure import marching_cubes as mc
 
 from .resources.units.units import *
 from .preset import Preset
+from .camera import Camera
 
 
 def reset(preset=None, keep_materials=False):
@@ -29,7 +30,9 @@ def reset(preset=None, keep_materials=False):
         remove_materials()
 
     if preset is not None:
-        pass
+        Preset.load(preset)
+
+    reset_blender()
 
 
 def remove_materials():
@@ -70,6 +73,43 @@ def set_mode(mode):
     except RuntimeError:
         # Already in mode, do nothing
         pass
+
+
+def reset_blender():
+    set_viewport_engine(Preset.get("blender.viewport_engine"))
+    set_wireframe(Preset.get("blender.wireframe"))
+
+
+def set_viewport_engine(engine):
+    """
+    Sets the render engine for the viewport.
+
+    Args:
+        engine (str): The name of the render engine to set.
+    """
+    if engine == "cycles":
+        bpy.context.scene.render.engine = "CYCLES"
+    elif engine == "eevee":
+        bpy.context.scene.render.engine = "BLENDER_EEVEE"
+    else:
+        raise ValueError(f"Unknown render engine: {engine}")
+
+
+def set_wireframe(wireframe):
+    """
+    Sets the wireframe display mode for the viewport.
+
+    Args:
+        wireframe (bool): Whether to display objects in wireframe mode.
+    """
+    for workspace in bpy.data.workspaces:
+        for screen in workspace.screens:
+            for area in screen.areas:
+                if area.type == "VIEW_3D":
+                    for space in area.spaces:
+                        if space.type == "VIEW_3D":
+                            space.overlay.wireframe_opacity = int(wireframe)
+                            space.overlay.show_wireframes = wireframe
 
 
 def marching_cubes_VASP(density, unit_cell, name, level=None):

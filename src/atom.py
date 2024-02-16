@@ -46,25 +46,25 @@ class Atom(MeshObject):
 
         radius = PeriodicTable[element].radius
         bpy.ops.mesh.primitive_uv_sphere_add(
-            radius=radius * Preset.get("atom.size"), segments=16, ring_count=8
+            radius=radius * Preset.get("atoms.size"), segments=16, ring_count=8
         )
         super().__init__()
 
         self.blender_object.data.polygons.foreach_set(
             "use_smooth",
-            [Preset.get("atom.smooth")] * len(self.blender_object.data.polygons),
+            [Preset.get("atoms.smooth")] * len(self.blender_object.data.polygons),
         )
         self.modifier = self.blender_object.modifiers.new(
             name="Subsurface", type="SUBSURF"
         )
-        self.modifier.levels = Preset.get("atom.viewport_quality")
-        self.modifier.render_levels = Preset.get("atom.render_quality")
+        self.modifier.levels = Preset.get("atoms.viewport_quality")
+        self.modifier.render_levels = Preset.get("atoms.render_quality")
 
         self.covalent_radius = PeriodicTable[element].covalent_radius
         self.element = element
         self.name = element
         self.material = Material(
-            f'{PeriodicTable[element].name} - {Preset.get("material.atoms")}'
+            f'{PeriodicTable[element].name} - {Preset.get("atoms.material")}'
         )
         Atom._atoms.append(self)
 

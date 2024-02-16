@@ -1,6 +1,7 @@
 import bpy  # type: ignore
 
 from .object import Object
+from .preset import Preset
 
 
 class Camera(Object):
@@ -23,7 +24,8 @@ class Camera(Object):
 
         self.position = position
         self.rotation = rotation
-        self.resolution = (1080, 1080)
+        self.resolution = Preset.get("camera.resolution")
+        self.render_engine = Preset.get("camera.render_engine")
 
     @property
     def blender_object(self):
