@@ -74,9 +74,9 @@ class Material:
             RuntimeError: If the material file is not found.
         """
         try:
-            file = str(Material.materials_directory / f"materials.blend")
+            file = str(Material.materials_directory / f"materials_user.blend")
             return Material._load(file, name)
-        except KeyError:
+        except (KeyError, RuntimeError):
             file = str(Material.materials_directory / f"materials.blend")
             return Material._load(file, name)
 

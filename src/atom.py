@@ -269,11 +269,14 @@ class Atoms(MeshObject):
         ):
             atoms = VaspChargeDensity(str(filename)).atoms[-1]
             return Atoms.ase(atoms, name)
-        elif filename.stem == "XDATCAR":
+        elif (
+            filename.stem in ("XDATCAR")
+            or format == "vasp-xdatcar"
+            or filename.suffix == ".traj"
+        ):
             final_frame = -1
-            for frame, aux in enumerate(
-                read(str(filename), format="vasp-xdatcar", index=":")
-            ):
+            format = "traj" if filename.suffix == "traj" else "vasp-xdatcar"
+            for frame, aux in enumerate(read(str(filename), format=format, index=":")):
                 final_frame = frame
                 if frame == 0:
                     atoms = Atoms.ase(aux, name, exclude_bonds=exclude_bonds)
