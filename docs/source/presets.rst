@@ -1,17 +1,19 @@
 Presets
 ^^^^^^^
 
-Location for preset files:
-""""""""""""""""""""""""""
-   * **default**: ``blentom/src/resources/presets/presets.json``
-   * **user**: ``blentom/src/resources/presets/user_presets.json``
+Presets are a collection of pre-defined settings to simplify the rendering process. Think rcParams from matplotlib. Base settings are defined in the default preset file. Do not edit it as during an update your changes will be overwritten. Instead change the settings you'd like to change or define completely new presets in the presets_user file. Any property not set there will be taken from the default preset from the default file.
 
-Available presets:
-""""""""""""""""""
+Location for preset files
+"""""""""""""""""""""""""
+   * **default**: ``blentom/src/resources/presets/presets.json``
+   * **user**: ``blentom/src/resources/presets/presets_user.json``
+
+Available presets
+"""""""""""""""""
    * default
 
-Available properties:
-"""""""""""""""""""""
+Available properties
+""""""""""""""""""""
 Notation:
    * *group* (italics: replace name with option*)
 

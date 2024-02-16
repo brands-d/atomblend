@@ -9,5 +9,6 @@ Documentation
    isosurfaces
    assets
    presets
-   scene
+   light
+   camera
    lib
