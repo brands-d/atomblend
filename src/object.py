@@ -140,7 +140,7 @@ class Object:
             if object.name == name and object.data is not None:
                 object.data.name = name
 
-    def make_active(self):
+    def active(self):
         """
         Makes the object active in the scene.
         """
@@ -189,7 +189,7 @@ class Object:
             elif isinstance(origin, (Object, bpy.types.Object)):
                 bpy.context.scene.cursor.location = Vector(origin.location)
 
-            self.make_active()
+            self.active()
             bpy.ops.object.origin_set(type="ORIGIN_CURSOR")
             self.rotation = Vector(rotation) + Vector(self.rotation)
             bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY")

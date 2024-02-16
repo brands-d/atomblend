@@ -14,7 +14,10 @@
         },
         "camera": {
             "render_engine": "cycles",
-            "resolution": [1080, 1080]
+            "resolution": [1080, 1080],
+            "focuslength": 35,
+            "orthographic_scale": 10,
+            "lens": "perspective"
         },
         "blender": {
             "viewport_engine": "eevee",

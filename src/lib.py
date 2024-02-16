@@ -24,6 +24,7 @@ def reset(preset=None, keep_materials=False):
         loaded preset.
         keep_materials  (bool): Whether to keep materials defined in Blender.
     """
+    remove_cameras()
     remove_meshes()
     remove_collections()
     if not keep_materials:
@@ -33,6 +34,15 @@ def reset(preset=None, keep_materials=False):
         Preset.load(preset)
 
     reset_blender()
+
+
+def remove_cameras():
+    """
+    Removes all excess cameras from the Blender scene.
+    """
+    for object in bpy.data.objects:
+        if object.type == "CAMERA" and object.name != "Camera":
+            bpy.data.objects.remove(object)
 
 
 def remove_materials():

@@ -35,6 +35,9 @@ Presets:
       
       * render_engine: (str), {cycles, eevee}
       * resolution: ([int, int])
+      * focuslength: (float)
+      * orthographic_scale: (float)
+      * lens: (str), {"perspective", "orthographic", "panoramic"}
 
    * blender
 
