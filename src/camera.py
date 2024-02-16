@@ -88,3 +88,38 @@ class Camera(Object):
             focuslength (float): The focus length of the camera.
         """
         self._blender_object.lens = focuslength
+
+    def render(filepath=None, show=True, mode="quality"):
+        """
+        Renders the current scene using the specified rendering mode and saves the image to a file.
+
+        Parameters:
+        - filepath (str): The path to save the rendered image. If None, the image will not be saved.
+        - show (bool): Whether to display the rendered image in a separate window.
+        - mode (str): The rendering mode to use. Options are "fast", "performance", "eevee" for fast rendering,
+        and "slow", "quality", "beautiful", "cycles" for high-quality rendering.
+        """
+        original_display_type = bpy.context.preferences.view.render_display_type
+        if show:
+            bpy.context.preferences.view.render_display_type = "WINDOW"
+
+        engine = bpy.context.scene.render.engine
+        if mode.lower() in ["fast", "performance", "eevee"]:
+            bpy.context.scene.render.engine = "BLENDER_EEVEE"
+        elif mode.lower() in ["slow", "quality", "beautiful", "cycles"]:
+            bpy.context.scene.render.engine = "CYCLES"
+
+        if filepath is not None:
+            bpy.context.scene.render.filepath = str(filepath)
+            if show:
+                bpy.ops.render.render("INVOKE_DEFAULT", write_still=True)
+            else:
+                bpy.ops.render.render(write_still=True)
+        else:
+            if show:
+                bpy.ops.render.render("INVOKE_DEFAULT")
+            else:
+                bpy.ops.render.render()
+
+        bpy.context.scene.render.engine = engine
+        bpy.context.preferences.view.render_display_type = original_display_type

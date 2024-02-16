@@ -2,7 +2,7 @@ import bpy
 from math import degrees, radians
 from mathutils import Euler, Vector
 
-from .lib import get_frame, set_frame
+from .animation import get_frame, set_frame
 
 
 class Object:

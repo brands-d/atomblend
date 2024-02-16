@@ -1,7 +1,37 @@
 Presets
 ^^^^^^^
 
+Location for preset files:
+""""""""""""""""""""""""""
+   * **default**: ``blentom/src/resources/presets/presets.json``
+   * **user**: ``blentom/src/resources/presets/user_presets.json``
+
+Available presets:
+""""""""""""""""""
+   * default
+
+Available properties:
+"""""""""""""""""""""
+Notation:
+   * *group* (italics: replace name with option*)
+
+      
+      * subgroup (if any)
+
+         * property: (type), {list of options}
+
+Presets:
+   * atoms
+
+      * *element name*: (str), {carbon, hydrogen, ...}
+ 
+         * size: (int)
+         * material: (str), {basic, standard, eggshell, plastic, metallic, magnetics}
+         * smooth: (bool)
+         * viewport_quality: (int)
+         * render_quality: (int)
+
 .. autoclass:: src.preset.Preset
    :members:
    :special-members:
-   :show-inheritance:
+   :exclude-members: __weakref__

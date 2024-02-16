@@ -1,23 +1,59 @@
-import bmesh
-import bpy
 import console_python
-from ase.io.cube import read_cube_data
-from mathutils import Vector
-from skimage.measure import marching_cubes as mc
 from inspect import currentframe
 
-BOHR = 0.529177
-ANGSTROM = 1
+import bpy
+import bmesh
+from mathutils import Vector
+
+from ase.io.cube import read_cube_data
+from skimage.measure import marching_cubes as mc
+
+from .resources.units.units import *
+from .preset import Preset
 
 
-def reset():
+def reset(preset=None, keep_materials=False):
     """
-    Resets the Blender scene by removing all objects, meshes, and collections.
+    Resets Blender to an original state. Intended use is at the beginning of a
+    script to clean changes made by previous execution of the script.
+
+    Args:
+        preset (str | None): The name of a preset to be loaded. Certain Blender
+        settings like renderer will be chosen based on this. Default: Currently
+        loaded preset.
+        keep_materials  (bool): Whether to keep materials defined in Blender.
     """
-    try:
-        bpy.ops.object.mode_set(mode="OBJECT")
-    except:
+    remove_meshes()
+    remove_collections()
+    if not keep_materials:
+        remove_materials()
+
+    if preset is not None:
         pass
+
+
+def remove_materials():
+    """
+    Removes all materials from the Blender scene.
+    """
+    for material in bpy.data.materials:
+        bpy.data.materials.remove(material)
+
+
+def remove_collections():
+    """
+    Removes all collections, except the scene collection, from the Blender scene.
+    """
+    for collection in bpy.data.collections:
+        if collection.name != "Collection":
+            bpy.data.collections.remove(collection)
+
+
+def remove_meshes():
+    """
+    Removes all mesh objects from the Blender scene.
+    """
+    set_mode("OBJECT")
     bpy.ops.object.select_all(action="DESELECT")
 
     for object in bpy.context.scene.objects:
@@ -27,45 +63,13 @@ def reset():
     for mesh in bpy.data.meshes:
         bpy.data.meshes.remove(mesh)
 
-    for collection in bpy.data.collections:
-        if collection.name != "Collection":
-            bpy.data.collections.remove(collection)
 
-
-def render(filepath=None, show=True, mode="quality"):
-    """
-    Renders the current scene using the specified rendering mode and saves the image to a file.
-
-    Parameters:
-    - filepath (str): The path to save the rendered image. If None, the image will not be saved.
-    - show (bool): Whether to display the rendered image in a separate window.
-    - mode (str): The rendering mode to use. Options are "fast", "performance", "eevee" for fast rendering,
-    and "slow", "quality", "beautiful", "cycles" for high-quality rendering.
-    """
-    original_display_type = bpy.context.preferences.view.render_display_type
-    if show:
-        bpy.context.preferences.view.render_display_type = "WINDOW"
-
-    engine = bpy.context.scene.render.engine
-    if mode.lower() in ["fast", "performance", "eevee"]:
-        bpy.context.scene.render.engine = "BLENDER_EEVEE"
-    elif mode.lower() in ["slow", "quality", "beautiful", "cycles"]:
-        bpy.context.scene.render.engine = "CYCLES"
-
-    if filepath is not None:
-        bpy.context.scene.render.filepath = str(filepath)
-        if show:
-            bpy.ops.render.render("INVOKE_DEFAULT", write_still=True)
-        else:
-            bpy.ops.render.render(write_still=True)
-    else:
-        if show:
-            bpy.ops.render.render("INVOKE_DEFAULT")
-        else:
-            bpy.ops.render.render()
-
-    bpy.context.scene.render.engine = engine
-    bpy.context.preferences.view.render_display_type = original_display_type
+def set_mode(mode):
+    try:
+        bpy.ops.object.mode_set(mode=mode)
+    except RuntimeError:
+        # Already in mode, do nothing
+        pass
 
 
 def marching_cubes_VASP(density, unit_cell, name, level=None):
@@ -186,7 +190,9 @@ def read_cube(filename):
     return data, origin, (x, y, z), atoms.cell
 
 
-def remove_mesh(x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_max=None):
+def remove_meshes(
+    x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_max=None
+):
     """
     Removes mesh objects within the specified coordinate range.
 
@@ -256,45 +262,3 @@ def interactive():
         console.locals.update(frame.f_back.f_locals)
     finally:
         del frame
-
-
-def set_frame(frame):
-    """
-    Sets the frame of the Blender scene.
-
-    Parameters:
-    - frame (int): The frame number to set.
-    """
-    bpy.context.scene.frame_set(frame)
-
-
-def get_frame():
-    """
-    Gets the frame of the Blender scene.
-
-    Returns:
-    - int: The current frame number.
-    """
-    return bpy.context.scene.frame_current
-
-
-def set_frame_range(start, end):
-    """
-    Sets the frame range of the Blender scene.
-
-    Parameters:
-    - start (int): The start frame number.
-    - end (int): The end frame number.
-    """
-    bpy.context.scene.frame_start = start
-    bpy.context.scene.frame_end = end
-
-
-def get_frame_range():
-    """
-    Gets the frame range of the Blender scene.
-
-    Returns:
-    - tuple: The start and end frame numbers.
-    """
-    return bpy.context.scene.frame_start, bpy.context.scene.frame_end

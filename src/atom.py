@@ -15,7 +15,7 @@ from .meshobject import MeshObject
 from .object import Object
 from .periodic_table import PeriodicTable
 from .preset import Preset
-from .lib import get_frame_range, set_frame_range
+from .animation import get_frame_range, set_frame_range
 
 
 class Atom(MeshObject):
