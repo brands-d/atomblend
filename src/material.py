@@ -66,7 +66,7 @@ class Material:
             name (str): The name of the material.
 
         Returns:
-            bpy.types.Material: The loaded material.
+            Material: The loaded material.
 
         Raises:
             KeyError: If the material is not found.
@@ -74,10 +74,12 @@ class Material:
         """
         try:
             file = str(Material.materials_directory / f"materials_user.blend")
-            return Material._load(file, name)
+            Material._load(file, name)
+            return Material(name)
         except (KeyError, RuntimeError):
             file = str(Material.materials_directory / f"materials.blend")
-            return Material._load(file, name)
+            Material._load(file, name)
+            return Material(name)
 
     @classmethod
     def create(cls, name, properties={}):
@@ -89,7 +91,7 @@ class Material:
             properties (dict): Additional properties for the material.
 
         Returns:
-            bpy.types.Material: The created material.
+            Material: The created material.
         """
         material = bpy.data.materials.new(name=name)
         material.use_nodes = True
@@ -102,6 +104,8 @@ class Material:
                 node.inputs[key].default_value = value
             except KeyError:
                 pass
+
+        return Material(name)
 
     def edit(self, property, value):
         """
@@ -135,9 +139,6 @@ class Material:
             file (str): The path to the material file.
             name (str): The name of the material.
 
-        Returns:
-            bpy.types.Material: The loaded material.
-
         Raises:
             KeyError: If the material is not found.
             RuntimeError: If the material file is not found.
@@ -157,5 +158,3 @@ class Material:
         material = bpy.data.materials.get(name)
         if material is None:
             raise KeyError(f"Material {name} not found")
-        else:
-            return material

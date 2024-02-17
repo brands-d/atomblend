@@ -8,6 +8,7 @@ Documentation
    atoms
    isosurfaces
    camera
+   material
    presets 
    light
    assets
