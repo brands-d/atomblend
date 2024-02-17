@@ -19,7 +19,7 @@ Installation
 Usage
 -----
 
-**Navigate to the ``Scripting`` page inside Blender. There you find a console or you can load ``.py`` scripts or create new ones.**
+**Navigate to the Scripting page inside Blender. There you find a console or you can load .py scripts or create new ones.**
 
 Quickstart
 ~~~~~~~~~~

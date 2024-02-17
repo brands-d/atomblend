@@ -49,7 +49,24 @@ Presets:
             * max_samples: (int)
             * noise: (float), if cycles
             * denoise: (bool), if cycles
-        
+
+   * light
+
+         * default_type: (str), {point, sun, spot, area}
+         * sun
+
+            * color: ([float, float, float])
+            * energy: (float)
+            * angle: (float)
+            * shadows: (bool)
+         
+         * point
+          
+            * color: ([float, float, float])
+            * energy: (float)
+            * radius: (float)
+            * shadows: (bool)
+
    * blender
 
       * viewport_engine: (str), {cycles, eevee}
@@ -59,6 +76,8 @@ Presets:
 
       * render_window: (bool)
 
+Preset Class
+""""""""""""
 .. autoclass:: src.preset.Preset
    :members:
    :special-members:

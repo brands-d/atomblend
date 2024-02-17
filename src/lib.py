@@ -44,7 +44,7 @@ def remove_cameras():
         if object.type == "CAMERA" and object.name != "Camera":
             bpy.data.objects.remove(object)
 
-    Camera.first_camera = True
+    Camera.first = True
 
 
 def remove_materials():

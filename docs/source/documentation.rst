@@ -2,13 +2,13 @@ Documentation
 -------------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
    meshobjects
    atoms
    isosurfaces
-   assets
-   presets
-   light
    camera
+   presets 
+   light
+   assets
    lib

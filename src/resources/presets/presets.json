@@ -14,7 +14,10 @@
         },
         "camera": {
             "quality": "high",
-            "resolution": [1080, 1080],
+            "resolution": [
+                1080,
+                1080
+            ],
             "focuslength": 35,
             "orthographic_scale": 10,
             "lens": "perspective",
@@ -35,6 +38,29 @@
                     "max_samples": 4096,
                     "denoise": true
                 }
+            }
+        },
+        "light": {
+            "default_type": "sun",
+            "sun": {
+                "energy": 4,
+                "angle": 70,
+                "color": [
+                    1,
+                    1,
+                    1
+                ],
+                "shadows": true
+            },
+            "point": {
+                "energy": 350,
+                "radius": 5,
+                "color": [
+                    1,
+                    1,
+                    1
+                ],
+                "shadows": true
             }
         },
         "blender": {

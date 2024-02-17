@@ -12,7 +12,7 @@ class Camera(Object):
     A class representing a camera in Blender. Multiple cameras with different properties are possible.
     """
 
-    first_camera = True
+    first = True
 
     def __init__(self, name=None, position=(0, 0, 10), rotation=(0, 0, 0)):
         """
@@ -25,7 +25,7 @@ class Camera(Object):
         """
 
         # The first camera is a reference to already existing camera
-        if Camera.first_camera:
+        if Camera.first:
             self.blender_object = Camera._get_scene_camera()
         else:
             self.blender_object = Camera._new()
@@ -45,7 +45,7 @@ class Camera(Object):
             self.name = name
 
         self.active = True
-        Camera.first_camera = False
+        Camera.first = False
 
     @property
     def resolution(self):
