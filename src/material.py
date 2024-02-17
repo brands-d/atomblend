@@ -1,4 +1,3 @@
-from json import load
 from os.path import exists
 from pathlib import Path
 
@@ -103,6 +102,29 @@ class Material:
                 node.inputs[key].default_value = value
             except KeyError:
                 pass
+
+    def edit(self, property, value):
+        """
+        Edit a property of the material.
+
+        Args:
+            property (str): The property to edit.
+            value (any): The new value for the property.
+        """
+        try:
+            shader = self._material.node_tree.nodes["Principled BSDF"]
+        except KeyError:
+            for node in self._material.node_tree.nodes:
+                if node.type == "BSDF_PRINCIPLED":
+                    shader = node
+                    break
+            if shader is None:
+                raise KeyError("Principled BSDF node not found.")
+
+        try:
+            shader.inputs[property].default_value = value
+        except KeyError:
+            raise KeyError(f"Property {property} not found.")
 
     @classmethod
     def _load(cls, file, name):
