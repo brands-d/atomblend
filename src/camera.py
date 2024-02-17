@@ -1,3 +1,6 @@
+from pathlib import Path
+from functools import wraps
+
 import bpy  # type: ignore
 
 from .object import Object
@@ -31,7 +34,7 @@ class Camera(Object):
         self.rotation = rotation
         self.resolution = Preset.get("camera.resolution")
         self.lens = Preset.get("camera.lens")
-        self.render_engine = Preset.get("camera.render_engine")
+        self.quality = Preset.get("camera.quality")
 
         if self.lens == "perspective":
             self.focuslength = Preset.get("camera.focuslength")
@@ -190,6 +193,35 @@ class Camera(Object):
         """
         return bpy.context.scene.camera == self.blender_object
 
+    @property
+    def engine(self):
+        """
+        Get the render engine used by the camera.
+
+        Returns:
+            str: Returns the type of render engine. {"cycles", "eevee"}
+        """
+        return self._engine
+
+    @engine.setter
+    def engine(self, engine):
+        """
+        Sets the render engine that will be used by this camera.
+
+        Note:
+            Direct use is discouraged. Use the quality property to set the render engine.
+
+        Args:
+            engine (str): Render engine to use. {"cycles", "eevee"}
+
+        Raises:
+            ValueError: If the provided render engine is unknown.
+        """
+        if engine.lower() not in ["cycles", "eevee"]:
+            raise ValueError(f"Unknown render engine: {engine}.")
+
+        self._engine = engine
+
     @active.setter
     def active(self, value):
         """
@@ -213,40 +245,106 @@ class Camera(Object):
         bpy.context.scene.camera = self.blender_object
         self.resolution = resolution
 
-    def render(filepath=None, show=True, mode="quality"):
+    @property
+    def quality(self):
         """
-        Renders the current scene using the specified rendering mode and saves the image to a file.
+        Get the quality of the camera.
 
-        Parameters:
-        - filepath (str): The path to save the rendered image. If None, the image will not be saved.
-        - show (bool): Whether to display the rendered image in a separate window.
-        - mode (str): The rendering mode to use. Options are "fast", "performance", "eevee" for fast rendering,
-        and "slow", "quality", "beautiful", "cycles" for high-quality rendering.
+        Returns:
+            str: The quality of the camera.
         """
-        original_display_type = bpy.context.preferences.view.render_display_type
+        return self._quality
+
+    @quality.setter
+    def quality(self, quality):
+        """
+        Set the camera quality to a preset.
+
+        Args:
+            quality (str): Name of the quality preset defined in the preset file.
+
+        Raises:
+            ValueError: If the provided quality preset is unknown.
+        """
+
+        try:
+            quality_dict = Preset.get(f"camera.quality_presets.{quality}")
+        except KeyError:
+            raise ValueError(f"Quality preset {quality} not found in the preset file.")
+
+        self._quality = quality
+        self.engine = quality_dict["engine"]
+        self._quality_dict = quality_dict
+
+    def _apply_render_settings(render):
+
+        @wraps(render)
+        def wrapper(self, *args, quality=None, **kwargs):
+            if quality is not None:
+                self.quality = quality
+            quality_dict = self._quality_dict
+
+            # Delayed import to avoid circular import
+            from .lib import get_viewport_engine, set_viewport_engine
+
+            # Set render engine
+            viewport_engine = get_viewport_engine()
+            set_viewport_engine(self.engine)
+
+            # Quality settings
+            if bpy.context.scene.render.engine == "CYCLES":
+                bpy.data.scenes["Scene"].cycles.use_denoising = quality_dict["denoise"]
+                bpy.data.scenes["Scene"].cycles.samples = quality_dict["max_samples"]
+                bpy.data.scenes["Scene"].cycles.adaptive_threshold = quality_dict[
+                    "noise"
+                ]
+            elif bpy.context.scene.render.engine == "BLENDER_EEVEE":
+                bpy.data.scenes["Scene"].eevee.taa_render_samples = quality_dict[
+                    "max_samples"
+                ]
+
+            # Render
+            render(self, *args, **kwargs)
+
+            # Reset render engine
+            set_viewport_engine(viewport_engine)
+
+        return wrapper
+
+    @_apply_render_settings
+    def render(self, filename=None, quality=None, show=None):
+        """
+        Renders the scene form the point of view of the active camera.
+
+        Note:
+            Will automatically make this camera the active one.
+
+        Args:
+            filename (str, optional): The output filename for the rendered image. Default: None. No file is written.
+            quality (str, optional): The quality preset to use for rendering. Default: Preset quality of camera.
+            show (bool, optional): Whether to display the render window after rendering. Default: None. Value from the preset configuration will be used.
+
+        Raises:
+            ValueError: If the parent directory of the specified filename does not exist.
+        """
+        if show is None:
+            show = Preset.get("misc.render_window")
+        Camera._set_render_window(show)
+
+        write_still = False  # Write out the result
+        if filename is not None:
+            filename = Path(filename)
+            if not filename.parent.exists():
+                raise ValueError(f"Directory {filename.parent} does not exist.")
+
+            bpy.context.scene.render.filepath = str(filename)
+            write_still = True
+
+        self.active = True
         if show:
-            bpy.context.preferences.view.render_display_type = "WINDOW"
-
-        engine = bpy.context.scene.render.engine
-        if mode.lower() in ["fast", "performance", "eevee"]:
-            bpy.context.scene.render.engine = "BLENDER_EEVEE"
-        elif mode.lower() in ["slow", "quality", "beautiful", "cycles"]:
-            bpy.context.scene.render.engine = "CYCLES"
-
-        if filepath is not None:
-            bpy.context.scene.render.filepath = str(filepath)
-            if show:
-                bpy.ops.render.render("INVOKE_DEFAULT", write_still=True)
-            else:
-                bpy.ops.render.render(write_still=True)
+            bpy.ops.render.render("INVOKE_DEFAULT", write_still=write_still)
         else:
-            if show:
-                bpy.ops.render.render("INVOKE_DEFAULT")
-            else:
-                bpy.ops.render.render()
-
-        bpy.context.scene.render.engine = engine
-        bpy.context.preferences.view.render_display_type = original_display_type
+            bpy.ops.render.render(write_still=write_still)
 
     @classmethod
     def _get_scene_camera(cls):
@@ -281,3 +379,16 @@ class Camera(Object):
         bpy.context.collection.objects.link(camera)
 
         return camera
+
+    @classmethod
+    def _set_render_window(cls, show):
+        """
+        Whether or not to show the rendering.
+
+        Args:
+            show (bool): TRUE means a window pop up will show the render result. FALSE means the render will not be displayed. Use FALSE for scripts.
+        """
+        if show:
+            bpy.context.preferences.view.render_display_type = "WINDOW"
+        else:
+            bpy.context.preferences.view.render_display_type = "NONE"

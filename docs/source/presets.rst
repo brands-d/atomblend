@@ -16,11 +16,12 @@ Available properties
 """"""""""""""""""""
 Notation:
    * *group* (italics: replace name with option*)
-
-      
+     
       * subgroup (if any)
 
-         * property: (type), {list of options}
+         * subsubgroupd (if any)
+
+            * property: (type), {list of options}
 
 Presets:
    * atoms
@@ -35,16 +36,28 @@ Presets:
       
    * camera
       
-      * render_engine: (str), {cycles, eevee}
+      * quality (str): {one of the quality_presets}
       * resolution: ([int, int])
       * focuslength: (float)
       * orthographic_scale: (float)
       * lens: (str), {"perspective", "orthographic", "panoramic"}
+      * quality_presets
 
+         * *name_of_preset*
+
+            * engine: (str), {cycles, eevee}
+            * max_samples: (int)
+            * noise: (float), if cycles
+            * denoise: (bool), if cycles
+        
    * blender
 
       * viewport_engine: (str), {cycles, eevee}
       * wireframe: (bool)
+   
+   * misc
+
+      * render_window: (bool)
 
 .. autoclass:: src.preset.Preset
    :members:

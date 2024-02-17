@@ -44,6 +44,8 @@ def remove_cameras():
         if object.type == "CAMERA" and object.name != "Camera":
             bpy.data.objects.remove(object)
 
+    Camera.first_camera = True
+
 
 def remove_materials():
     """
@@ -78,16 +80,69 @@ def remove_meshes():
 
 
 def set_mode(mode):
+    """
+    Sets the mode of the active object in Blender.
+
+    Args:
+        mode (str): The mode to set (e.g., 'OBJECT', 'EDIT', 'SCULPT').
+    """
     try:
-        bpy.ops.object.mode_set(mode=mode)
+        bpy.ops.object.mode_set(mode=mode.upper())
     except RuntimeError:
         # Already in mode, do nothing
         pass
 
 
 def reset_blender():
+    """
+    Resets the Blender UI settings to their default values.
+    """
     set_viewport_engine(Preset.get("blender.viewport_engine"))
+    set_viewport_noise(Preset.get("blender.viewport_noise"))
+    set_viewport_max_samples(Preset.get("blender.viewport_max_samples"))
+    set_viewport_denoise(Preset.get("blender.viewport_denoise"))
     set_wireframe(Preset.get("blender.wireframe"))
+
+
+def set_viewport_noise(noise):
+    """
+    Sets the viewport noise level.
+
+    Note:
+        This setting is only available in Cycles.
+
+    Args:
+        noise (int): The number of samples to use for viewport rendering.
+    """
+    if bpy.context.scene.render.engine == "CYCLES":
+        bpy.data.scenes["Scene"].cycles.preview_adaptive_threshold = noise
+
+
+def set_viewport_max_samples(samples):
+    """
+    Sets the maximum number of samples for the viewport.
+
+    Args:
+        samples (int): The maximum number of samples to use for viewport rendering.
+    """
+    if bpy.context.scene.render.engine == "CYCLES":
+        bpy.data.scenes["Scene"].cycles.preview_samples = samples
+    elif bpy.context.scene.render.engine == "BLENDER_EEVEE":
+        bpy.data.scenes["Scene"].eevee.taa_samples = samples
+
+
+def set_viewport_denoise(denoise):
+    """
+    Sets the denoising method for the viewport.
+
+    Note:
+        This setting is only available in Cycles.
+
+    Args:
+        denoise (str): The name of the denoising method to use.
+    """
+    if bpy.context.scene.render.engine == "CYCLES":
+        bpy.data.scenes["Scene"].cycles.use_preview_denoising = denoise
 
 
 def set_viewport_engine(engine):
@@ -312,3 +367,35 @@ def interactive():
         console.locals.update(frame.f_back.f_locals)
     finally:
         del frame
+
+
+def get_viewport_engine():
+    """
+    Retrieves the current viewport render engine.
+
+    Returns:
+        str: The name of the current viewport render engine.
+    """
+    engine = bpy.context.scene.render.engine
+    if engine == "CYCLES":
+        return "cycles"
+    elif engine == "BLENDER_EEVEE":
+        return "eevee"
+
+
+def set_viewport_engine(engine):
+    """
+    Sets the render engine for the viewport.
+
+    Args:
+        engine (str): The name of the render engine to set.
+
+    Raises:
+        ValueError: If the specified engine is not recognized.
+    """
+    if engine == "cycles":
+        bpy.context.scene.render.engine = "CYCLES"
+    elif engine == "eevee":
+        bpy.context.scene.render.engine = "BLENDER_EEVEE"
+    else:
+        raise ValueError(f"Unknown render engine: {engine}")

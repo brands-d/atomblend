@@ -13,15 +13,39 @@
             "render_quality": 2
         },
         "camera": {
-            "render_engine": "cycles",
+            "quality": "high",
             "resolution": [1080, 1080],
             "focuslength": 35,
             "orthographic_scale": 10,
-            "lens": "perspective"
+            "lens": "perspective",
+            "quality_presets": {
+                "low": {
+                    "engine": "eevee",
+                    "max_samples": 64
+                },
+                "medium": {
+                    "engine": "cycles",
+                    "noise": 0.1,
+                    "max_samples": 512,
+                    "denoise": true
+                },
+                "high": {
+                    "engine": "cycles",
+                    "noise": 0.01,
+                    "max_samples": 4096,
+                    "denoise": true
+                }
+            }
         },
         "blender": {
             "viewport_engine": "eevee",
+            "viewport_noise": 0.1,
+            "viewport_max_samples": 64,
+            "viewport_denoise": true,
             "wireframe": false
+        },
+        "misc": {
+            "render_window": true
         }
     }
 }

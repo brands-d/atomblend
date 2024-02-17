@@ -40,7 +40,7 @@ class Preset:
         Retrieves the value of a specific setting from a preset.
 
         Args:
-            setting (str): The setting to retrieve, in the format "group.[subgroup.]property".
+            setting (str): The setting to retrieve, in the format "group.[subgroup.[subsubgroup.]]property".
             preset (str | None): The preset from which the property should be returned. Default: Currently loaded preset.
 
         Returns:
@@ -70,8 +70,14 @@ class Preset:
             # Subgroup
             group, subgroup, property = setting
             return aux[group][subgroup][property]
+        elif len(setting) == 4:
+            # Subsubgroup
+            group, subgroup, subsubgroup, property = setting
+            return aux[group][subgroup][subsubgroup][property]
         else:
-            raise ValueError("Wrong setting format. Use: group.[subgroup.]property")
+            raise ValueError(
+                "Wrong setting format. Use: group.[subgroup.[subsubgroup.]]property"
+            )
 
     @classmethod
     def set(cls, setting, value, preset=None):
@@ -79,7 +85,7 @@ class Preset:
         Sets the value of a specific property in a preset. Edits the user preset file!
 
         Args:
-            setting (str): The property to set, in the format "group.[subgroup.]property".
+            setting (str): The property to set, in the format "group.[subgroup.[subsubgroup.]]property".
             value (any): The value to set for the specified property.
             preset (str | None): The preset for which the property should be set. Default: Currently loaded preset.
 
@@ -103,8 +109,17 @@ class Preset:
             user_preset = deep_dict_update(
                 user_preset, {preset: {group: {subgroup: {property: value}}}}
             )
+        elif len(setting) == 4:
+            # Subsubgroup
+            group, subgroup, subsubgroup, property = setting
+            user_preset = deep_dict_update(
+                user_preset,
+                {preset: {group: {subgroup: {subsubgroup: {property: value}}}}},
+            )
         else:
-            raise ValueError("Wrong setting format. Use: group.[subgroup.]property")
+            raise ValueError(
+                "Wrong setting format. Use: group.[subgroup.[subsubgroup.]]property"
+            )
 
         jdump(user_preset, open(Preset.presets_user_file, "w"))
 
