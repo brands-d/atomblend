@@ -83,6 +83,26 @@ class Material:
         """
         self._material = material
 
+    @property
+    def color(self):
+        """
+        Base color of the material.
+
+        Returns:
+            tuple[float]: RGBA values between 0 and 1.
+        """
+        return self.properties["Base Color"]
+
+    @color.setter
+    def color(self, color):
+        """
+        Sets the base color of the material.
+
+        Args:
+            color (tuple[float]): RGBA values between 0 and 1.
+        """
+        self.properties = {"Base Color": color}
+
     @classmethod
     def _create(cls, name):
         material = bpy.data.materials.new(name=name)

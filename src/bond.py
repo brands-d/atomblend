@@ -8,52 +8,91 @@ from .preset import Preset
 
 
 class Bond(MeshObject):
-    def __init__(self, atom_1, atom_2):
+    """
+    Represents a bond between two atoms in a molecular structure.
+
+    Attributes:
+        atom_a (Atom): The first atom connected by the bond.
+        atom_b (Atom): The second atom connected by the bond.
+    """
+
+    def __init__(self, atom_a, atom_b):
         """
         Initializes a Bond object between two atoms.
 
         Args:
-            atom_1 (Atom): The first atom connected by the bond.
-            atom_2 (Atom): The second atom connected by the bond.
+            atom_a (Atom): The first atom connected by the bond.
+            atom_b (Atom): The second atom connected by the bond.
         """
-        self.atom_1 = atom_1
-        self.atom_2 = atom_2
+        self.atom_a = atom_a
+        self.atom_b = atom_b
+        self.atom_a.bonds.append(self)
+        self.atom_b.bonds.append(self)
 
-        bpy.ops.mesh.primitive_cylinder_add()
+        vertices = Preset.get("bonds.sides")
+        bpy.ops.mesh.primitive_cylinder_add(vertices=vertices)
         super().__init__()
 
         self.update()
-        self.blender_object.scale[:2] = (0.1, 0.1)
-        self.material = Material(f'Bond - {Preset.get("material.bonds")}')
-        self.name = f"{atom_1.name}-{atom_2.name}"
+        thickness = Preset.get("bonds.thickness")
+        self.scale = (thickness, thickness, 1)
+
+        self.material = Preset.get("bonds.material")
+        self.name = f"{atom_a.name}-{atom_b.name}"
 
     @property
-    def scale(self):
+    def thickness(self):
         """
-        Get the scale of the bond.
+        Get the thickness of the bond. Corresponds to the scaling.
 
         Returns:
-            list: A list containing the X and Y scale values.
+            float: Thickness of the bond.
         """
-        return list(self.blender_object.scale[:2])
+        return self.blender_object.scale[0]
 
-    @scale.setter
-    def scale(self, scale):
+    @thickness.setter
+    def thickness(self, thickness):
         """
-        Set the scale of the bond.
+        Set the thickness of the bond.
 
         Args:
-            scale (float or int or list): The scale value(s) to set. If a single value is provided, it will be applied to both X and Y axes.
-                If a list of two values is provided, the first value will be applied to the X axis and the second value to the Y axis.
+            scale (float): Sets the thickness of the bond.
         """
-        if isinstance(scale, (int, float)):
-            scale = [scale] * 2
-        scale = [s * a for s, a in zip(self.scale, scale)]
-        self.blender_object.scale = [scale[0], scale[1], self.blender_object.scale[2]]
+
+        self.blender_object.scale = [thickness, thickness, self.scale[1]]
+
+    @property
+    def material(self):
+        pass
+
+    @material.setter
+    def material(self, material):
+        if material in ("step",):
+            material = Material(f"Bond - {material}")
+            material.name = f"Bond - {self.name}"
+            material.material.node_tree.nodes[3].color_ramp.elements[
+                1
+            ].color = self.atom_a.material.color
+            material.material.node_tree.nodes[3].color_ramp.elements[
+                0
+            ].color = self.atom_b.material.color
+            ratio = self.atom_b.covalent_radius / (
+                self.atom_a.covalent_radius + self.atom_b.covalent_radius
+            )
+            material.material.node_tree.nodes[3].color_ramp.elements[1].position = ratio
+        elif isinstance(material, Material):
+            pass
+        else:
+            material = Material(f"Bond - {material}")
+
+        self.blender_object.active_material = material.material
 
     def update(self):
-        distance = Vector(self.atom_1.position) - Vector(self.atom_2.position)
-        location = Vector(self.atom_1.position) - distance / 2
+        """
+        Update the position, rotation, and scale of the bond based on the positions of the connected atoms.
+        """
+        distance = Vector(self.atom_a.position) - Vector(self.atom_b.position)
+        location = Vector(self.atom_a.position) - distance / 2
 
         self.position = location
         self.rotation = (
@@ -62,3 +101,10 @@ class Bond(MeshObject):
             degrees(atan2(distance[1], distance[0])),
         )
         self.blender_object.scale[2] = distance.length / 2
+
+    def delete(self):
+        """
+        Removes itself from bond lists of atoms participating in bond.
+        """
+        self.atom_a.bonds.remove(self)
+        self.atom_b.bonds.remove(self)

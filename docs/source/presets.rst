@@ -38,8 +38,16 @@ Presets:
       
       * *element name*: (str), {C, H, ...}
          
-         * Specify global atoms properties here for specific elements
-      
+         * Specify global atoms properties here for specific elements (except "metal_bonds")
+   
+   * bonds
+
+      * no_bonds: (list[list])
+      * factor: (float)
+      * thickness: (float)
+      * sides: (int)
+      * material: (str), name of Material or "step"
+
    * camera
       
       * quality (str): {one of the quality_presets}

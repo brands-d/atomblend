@@ -1,6 +1,6 @@
+import logging
 from itertools import combinations, product
 from pathlib import Path
-from typing import Union
 
 import bpy  # type: ignore
 from ase.calculators.vasp import VaspChargeDensity
@@ -217,21 +217,13 @@ class Atoms(MeshObject):
         self.collection.link(self.bonds_collection)
 
     @classmethod
-    def ase(
-        cls,
-        atoms: "ase.Atoms",
-        name: str = None,
-        exclude_bonds: Union[list, tuple] = None,
-    ):
+    def ase(cls, atoms, name=None):
         """
         Creates an Atoms instance from an ASE Atoms object.
 
         Args:
             atoms (ase.Atoms): The ASE Atoms object.
-            name (str, optional): The name of the atoms collection. Defaults to
-            None.
-            exclude_bonds (list, optional): A list of tuples of elements
-            symbols to exclude from bond creation. Defaults to None.
+            name (str | None): The name of the atoms collection. Default: None. "New Atoms".
 
         Returns:
             Atoms: The created Atoms instance.
@@ -248,42 +240,35 @@ class Atoms(MeshObject):
         for atom in atoms:
             self += Atom.ase(atom)
 
-        self.create_bonds(exclude_bonds=exclude_bonds)
+        self.create_bonds()
         return self
 
     @classmethod
-    def read(
-        cls,
-        filename: Union[str, Path],
-        name: str = None,
-        format: str = None,
-        exclude_bonds: Union[list, tuple] = None,
-    ):
+    def read(cls, filename, name=None, format=None):
         """
         Reads an atoms collection from a file.
 
         Args:
             filename (str): The path to the file.
-            name (str, optional): The name of the atoms collection. Defaults to None.
-            format (str, optional): The file format. Defaults to None.
-            exclude_bonds (list, optional): A list of tuples of elements
-            symbols to exclude from bond creation. Defaults to None.
+            name (str | None): The name of the atoms collection. Default: None. Name of the file.
+            format (str): The file format. Default: None. Guess format.
 
         Returns:
             Atoms: The read atoms collection.
 
         Examples:
             >>> # This will read an atoms collection from a file. Does not create bonds between substrate atoms.
-            >>> atoms = Atoms.read("POSCAR", exclude_bonds=("Ag", "Ag"))
+            >>> atoms = Atoms.read("POSCAR")
         """
 
         filename = Path(filename)
         if name is None:
             name = filename.stem
 
-        if filename.stem == "CHGCAR" or (
-            isinstance(format, str) and format.lower in ("chgcar", "parchg")
-        ):
+        if format is not None:
+            format = format.lower()
+
+        if filename.stem == "CHGCAR" or format in ("chgcar", "parchg"):
             atoms = VaspChargeDensity(str(filename)).atoms[-1]
             return Atoms.ase(atoms, name)
         # elif (
@@ -304,11 +289,7 @@ class Atoms(MeshObject):
         #         set_frame_range(get_frame_range()[0], frame)
         #     return atoms
         else:
-            return Atoms.ase(
-                read(str(filename), format=format),
-                name=name,
-                exclude_bonds=exclude_bonds,
-            )
+            return Atoms.ase(read(str(filename), format=format), name=name)
 
     def __add__(self, objects):
         """
@@ -528,49 +509,56 @@ class Atoms(MeshObject):
             if atom.blender_object is None:
                 self._atoms.remove(atom)
 
-    def create_bonds(
-        self, periodic: bool = True, exclude_bonds: Union[list, tuple] = None
-    ):
+    def create_bonds(self, periodic=True):
         """
         Creates bonds between atoms in the atoms collection.
 
         Args:
-            periodic (bool, optional): Whether to consider periodic boundaries.
-            Defaults to True.
-            exclude_bonds (list, optional): A list of tuples of elements
-            symbols to exclude from bond creation. Defaults to None.
+            periodic (bool): Whether to consider periodic boundaries. Default: True.
         """
+        exclude_bonds = Preset.get("bonds.no_bonds")
 
-        if exclude_bonds is not None and isinstance(exclude_bonds[0], str):
-            exclude_bonds = (exclude_bonds,)
-        for atom_1, atom_2 in combinations(self.get("all"), 2):
-            if (
-                exclude_bonds is not None
-                and (atom_1.element, atom_2.element) in exclude_bonds
-            ):
+        if periodic and self.unit_cell is None:
+            logging.warning("Cannot do periodic bonds without unit cell.")
+            periodic = False
+
+        for atom_a, atom_b in combinations(self.get("all"), 2):
+            if [atom_a.element, atom_b.element] in exclude_bonds:
                 continue
-            if periodic and self.unit_cell is not None:
+
+            if periodic:
                 for x, y, z in (p for p in product((-1, 0, 1), repeat=3)):
                     shift = Vector(
                         x * self.unit_cell[0]
                         + y * self.unit_cell[1]
                         + z * self.unit_cell[2]
                     )
-                    if (
-                        Vector(atom_1.position)
-                        - Vector(atom_2.position)
-                        - Vector(shift)
-                    ).length <= 1.2 * (atom_1.covalent_radius + atom_2.covalent_radius):
-                        if (x, y, z) != (0, 0, 0) and periodic:
-                            atom_2 = _DummyAtom(atom_2)
-                            atom_2.position = Vector(atom_2.position) + shift
 
-                        self += Bond(atom_1, atom_2)
+                    if (x, y, z) != (0, 0, 0):
+                        atom_b_dummy = _DummyAtom(atom_b)
+                        atom_b_dummy.position = Vector(atom_b.position) + shift
+                        self._create_bond(atom_a, atom_b_dummy)
+                    else:
+                        self._create_bond(atom_a, atom_b)
             else:
-                if (Vector(atom_1.position) - Vector(atom_2.position)).length <= 1.2 * (
-                    atom_1.covalent_radius + atom_2.covalent_radius
-                ):
-                    self += Bond(atom_1, atom_2)
+                self._create_bond(atom_a, atom_b)
+
+    def _create_bond(self, atom_a, atom_b):
+        """
+        Creates a bond between two atoms if there distance is smaller or equal to bonds.factor * (atom_a.covalent_radius + atom_b.covalent_radius)
+
+        Args:
+            atom_a (Atom): The first atom.
+            atom_b (Atom): The second atom.
+        """
+        factor = Preset.get("bonds.factor")
+        position_a = Vector(atom_a.position)
+        position_b = Vector(atom_b.position)
+        radius_a = atom_a.covalent_radius
+        radius_b = atom_b.covalent_radius
+
+        if (position_a - position_b).length <= factor * (radius_a + radius_b):
+            self += Bond(atom_a, atom_b)
 
     def repeat(self, repetitions):
         """
@@ -656,6 +644,27 @@ class _DummyAtom:
         Args:
             atom (Atom): The original atom.
         """
+        self.atom = atom
         self.position = atom.position
         self.covalent_radius = atom.covalent_radius
         self.name = atom.name
+
+    @property
+    def material(self):
+        """
+        Material of the atom.
+
+        Returns:
+            Material: Material of the atom.
+        """
+        return self.atom.material
+
+    @property
+    def bonds(self):
+        """
+        Returns the bonds associated with this atom.
+
+        Returns:
+            list: A list of bonds associated with this atom.
+        """
+        return self.atom.bonds

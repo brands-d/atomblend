@@ -14,7 +14,34 @@
                 "smooth": true,
                 "viewport": 0,
                 "render": 2
+            },
+            "Ag": {
+                "size": 2
             }
+        },
+        "bonds": {
+            "no_bonds": [
+                [
+                    "Ag",
+                    "Ag"
+                ],
+                [
+                    "Cu",
+                    "Cu"
+                ],
+                [
+                    "Au",
+                    "Au"
+                ],
+                [
+                    "Pt",
+                    "Pt"
+                ]
+            ],
+            "factor": 1.2,
+            "thickness": 0.1,
+            "sides": 24,
+            "material": "step"
         },
         "camera": {
             "quality": "high",
