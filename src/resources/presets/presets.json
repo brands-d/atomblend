@@ -1,9 +1,17 @@
 {
     "default": {
-        "material": {
-            "atoms": "standard",
-            "chargedensity": "standard",
-            "bonds": "standard"
+        "isosurface": {
+            "chargedensity": {
+                "material": "standard"
+            },
+            "wavefunction": {
+                "positive": {
+                    "material": "standard"
+                },
+                "negative": {
+                    "material": "standard"
+                }
+            }
         },
         "atoms": {
             "material": "standard",

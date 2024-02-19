@@ -284,7 +284,7 @@ class ChargeDensity(Isosurface):
     def __init__(self, *args, **kwargs):
         self.positive = Isosurface.read(*args, **kwargs)
         self.positive.material = Material(
-            f'ChargeDensity - {Preset.get("material.chargedensity")}'
+            f'ChargeDensity - {Preset.get("isosurface.chargedensity.material")}'
         )
 
     @classmethod
@@ -401,8 +401,14 @@ class Wavefunction:
         kwargs["name"] = f"{name} - Positive"
         self.positive = Isosurface.read(filename, *args, **kwargs)
         kwargs["level"] = -self.positive.level
+        self.positive.material = Material(
+            f'Wavefunction (Positive) - {Preset.get("isosurface.wavefunction.negative.material")}'
+        )
         kwargs["name"] = f"{name} - Negative"
         self.negative = Isosurface.read(filename, *args, **kwargs)
+        self.negative.material = Material(
+            f'Wavefunction (Negative) - {Preset.get("isosurface.wavefunction.negative.material")}'
+        )
         self.negative._collection = self.collection
         self.positive._collection = self.collection
 
