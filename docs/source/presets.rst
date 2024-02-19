@@ -92,9 +92,12 @@ Presets:
       * frame_multiplier: (int)
       * fps: (int)
 
-   * misc
+   * render
 
       * render_window: (bool)
+      * transparent_background: (bool)
+      * compression: (int)
+      * color_depth: (int) {8, 16}
 
 Preset Class
 """"""""""""

@@ -59,6 +59,16 @@ def reset_frame():
     animation.initial_frame = 1
 
 
+def set_background_transparent(value):
+    """
+    Sets the background of the rendered images to be transparent.
+
+    Args:
+        value (bool): Whether to make the background transparent.
+    """
+    bpy.data.scenes["Scene"].render.film_transparent = value
+
+
 def remove_materials():
     """
     Removes all materials from the Blender scene.

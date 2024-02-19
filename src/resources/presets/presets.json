@@ -106,8 +106,11 @@
             "frame_multiplier": 1,
             "fps": 24
         },
-        "misc": {
-            "render_window": true
+        "render": {
+            "render_window": true,
+            "transparent_background": true,
+            "compression": 100,
+            "color_depth": 16
         }
     }
 }

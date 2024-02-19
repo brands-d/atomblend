@@ -285,11 +285,26 @@ class Camera(Object):
             quality_dict = self._quality_dict
 
             # Delayed import to avoid circular import
-            from .lib import get_viewport_engine, set_viewport_engine
+            from .lib import (
+                get_viewport_engine,
+                set_viewport_engine,
+                set_background_transparent,
+            )
 
             # Set render engine
             viewport_engine = get_viewport_engine()
             set_viewport_engine(self.engine)
+
+            # Set transparent background
+            set_background_transparent(Preset.get("render.transparent_background"))
+
+            # Set output
+            bpy.data.scenes["Scene"].render.image_settings.color_depth = str(
+                Preset.get("render.color_depth")
+            )
+            bpy.data.scenes["Scene"].render.image_settings.compression = Preset.get(
+                "render.compression"
+            )
 
             # Quality settings
             if bpy.context.scene.render.engine == "CYCLES":
@@ -308,6 +323,7 @@ class Camera(Object):
 
             # Reset render engine
             set_viewport_engine(viewport_engine)
+            set_background_transparent(False)
 
         return wrapper
 
@@ -328,7 +344,7 @@ class Camera(Object):
             ValueError: If the parent directory of the specified filename does not exist.
         """
         if show is None:
-            show = Preset.get("misc.render_window")
+            show = Preset.get("render.render_window")
         Camera._set_render_window(show)
 
         write_still = False  # Write out the result
