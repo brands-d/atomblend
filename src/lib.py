@@ -295,9 +295,7 @@ def read_cube(filename):
     return data, origin, (x, y, z), atoms.cell
 
 
-def remove_meshes(
-    x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_max=None
-):
+def cut_meshes(x_min=None, x_max=None, y_min=None, y_max=None, z_min=None, z_max=None):
     """
     Removes mesh objects within the specified coordinate range.
 

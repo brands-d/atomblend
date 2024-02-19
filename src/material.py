@@ -8,9 +8,17 @@ from .periodic_table import PeriodicTable
 
 
 class Material:
-    """A class representing a material in Blender."""
+    """A class representing a material in Blender.
+
+    Attributes:
+        materials_directory (Path): The directory where the material files are located.
+        materials_user_file (Path): The file containing the user materials.
+        materials_file (Path): The file with the default materials.
+    """
 
     materials_directory = Path(__file__).parent / "resources" / "materials"
+    materials_user_file = materials_directory / f"materials_user.blend"
+    materials_file = materials_directory / f"materials.blend"
 
     def __init__(self, name):
         """
@@ -197,11 +205,9 @@ class Material:
                 raise ValueError(f"Material {name} not found.")
 
         try:
-            file = str(Material.materials_directory / f"materials_user.blend")
-            _load_from_file(file, name)
+            _load_from_file(str(Material.materials_user_file), name)
         except (ValueError, RuntimeError):
             try:
-                file = str(Material.materials_directory / f"materials.blend")
-                _load_from_file(file, name)
+                _load_from_file(str(Material.materials_file), name)
             except (ValueError, RuntimeError):
                 raise ValueError(f"Material file not found.")

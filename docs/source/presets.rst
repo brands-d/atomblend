@@ -72,6 +72,12 @@ Presets:
       * viewport_engine: (str), {cycles, eevee}
       * wireframe: (bool)
    
+   * animation
+
+      * interpolation: (str), {linear}
+      * interpolated_frames: (int)
+      * fps: (int)
+
    * misc
 
       * render_window: (bool)

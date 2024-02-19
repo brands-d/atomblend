@@ -1,40 +1,121 @@
-def set_frame_range(start, end):
+import bpy
+
+from .preset import Preset
+
+
+class Animation:
     """
-    Sets the frame range of the Blender scene.
-
-    Parameters:
-    - start (int): The start frame number.
-    - end (int): The end frame number.
+    Represents an animation in Blender. A helper class not meant to be used directly.
     """
-    bpy.context.scene.frame_start = start
-    bpy.context.scene.frame_end = end
 
+    def __init__(self):
+        self.interpolation_type = Preset.get("animation.interpolation")
+        self.fps = Preset.get("animation.fps")
 
-def get_frame_range():
-    """
-    Gets the frame range of the Blender scene.
+    @property
+    def interpolation_type(self):
+        """
+        The interpolation type used for keyframe animation.
 
-    Returns:
-    - tuple: The start and end frame numbers.
-    """
-    return bpy.context.scene.frame_start, bpy.context.scene.frame_end
+        Returns:
+            str: The interpolation type. {'linear'}
+        """
+        return bpy.context.preferences.edit.keyframe_new_interpolation_type.lower()
 
+    @interpolation_type.setter
+    def interpolation_type(self, interpolation_type):
+        """
+        Sets the interpolation type used for keyframe animation.
 
-def set_frame(frame):
-    """
-    Sets the frame of the Blender scene.
+        Args:
+            interpolation_type (str): The interpolation type to set. {'linear'}
 
-    Parameters:
-    - frame (int): The frame number to set.
-    """
-    bpy.context.scene.frame_set(frame)
+        Raises:
+            ValueError: If the interpolation type is invalid.
+        """
+        try:
+            bpy.context.preferences.edit.keyframe_new_interpolation_type = (
+                interpolation_type.upper()
+            )
+        except AttributeError:
+            raise ValueError("Invalid interpolation type.")
 
+    @property
+    def fps(self):
+        """
+        The frames per second (FPS) of the animation.
 
-def get_frame():
-    """
-    Gets the frame of the Blender scene.
+        Returns:
+            int: The FPS.
+        """
+        return bpy.context.scene.render.fps
 
-    Returns:
-    - int: The current frame number.
-    """
-    return bpy.context.scene.frame_current
+    @fps.setter
+    def fps(self, fps):
+        """
+        Sets the frames per second (FPS) of the animation.
+
+        Args:
+            fps (int): The FPS to set.
+        """
+        bpy.context.scene.render.fps = fps
+
+    @property
+    def initial_frame(self):
+        """
+        The initial frame of the animation.
+
+        Returns:
+            int: The initial frame.
+        """
+        return bpy.context.scene.frame_start
+
+    @initial_frame.setter
+    def initial_frame(self, initial_frame):
+        """
+        Sets the initial frame of the animation.
+
+        Args:
+            initial_frame (int): The initial frame to set.
+        """
+        bpy.context.scene.frame_start = initial_frame
+
+    @property
+    def final_frame(self):
+        """
+        The final frame of the animation.
+
+        Returns:
+            int: The final frame.
+        """
+        return bpy.context.scene.frame_end
+
+    @final_frame.setter
+    def final_frame(self, final_frame):
+        """
+        Sets the final frame of the animation.
+
+        Args:
+            final_frame (int): The final frame to set.
+        """
+        bpy.context.scene.frame_end = final_frame
+
+    @property
+    def current_frame(self):
+        """
+        The current frame of the animation.
+
+        Returns:
+            int: The current frame.
+        """
+        return bpy.context.scene.frame_current
+
+    @current_frame.setter
+    def current_frame(self, current_frame):
+        """
+        Sets the current frame of the animation.
+
+        Args:
+            current_frame (int): The current frame to set.
+        """
+        bpy.context.scene.frame_current = current_frame

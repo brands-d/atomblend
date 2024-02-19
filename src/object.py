@@ -2,8 +2,6 @@ import bpy
 from math import degrees, radians
 from mathutils import Euler, Vector
 
-from .animation import get_frame, set_frame
-
 
 class Object:
     """
@@ -15,7 +13,7 @@ class Object:
     Methods:
         make_active(): Makes the object active in the scene.
         move(translation): Moves the object by the specified translation.
-        rotate(rotation, origin="local"): Rotates the object by the specified rotation.
+        rotate(rotation, origin="local"): Rotates the object by the specified roation.
         delete(): Deletes the object from the scene.
     """
 

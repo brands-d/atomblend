@@ -15,7 +15,8 @@ from .meshobject import MeshObject
 from .object import Object
 from .periodic_table import PeriodicTable
 from .preset import Preset
-from .animation import get_frame_range, set_frame_range
+
+# from .animation import get_frame_range, set_frame_range
 
 
 class Atom(MeshObject):
@@ -269,23 +270,23 @@ class Atoms(MeshObject):
         ):
             atoms = VaspChargeDensity(str(filename)).atoms[-1]
             return Atoms.ase(atoms, name)
-        elif (
-            filename.stem in ("XDATCAR")
-            or format == "vasp-xdatcar"
-            or filename.suffix == ".traj"
-        ):
-            final_frame = -1
-            format = "traj" if filename.suffix == "traj" else "vasp-xdatcar"
-            for frame, aux in enumerate(read(str(filename), format=format, index=":")):
-                final_frame = frame
-                if frame == 0:
-                    atoms = Atoms.ase(aux, name, exclude_bonds=exclude_bonds)
+        # elif (
+        #     filename.stem in ("XDATCAR")
+        #     or format == "vasp-xdatcar"
+        #     or filename.suffix == ".traj"
+        # ):
+        #     final_frame = -1
+        #     format = "traj" if filename.suffix == "traj" else "vasp-xdatcar"
+        #     for frame, aux in enumerate(read(str(filename), format=format, index=":")):
+        #         final_frame = frame
+        #         if frame == 0:
+        #             atoms = Atoms.ase(aux, name, exclude_bonds=exclude_bonds)
 
-                atoms.insert_keyframe("location", aux.positions, frame)
+        #         atoms.insert_keyframe("location", aux.positions, frame)
 
-            if get_frame_range()[-1] < final_frame:
-                set_frame_range(get_frame_range()[0], frame)
-            return atoms
+        #     if get_frame_range()[-1] < final_frame:
+        #         set_frame_range(get_frame_range()[0], frame)
+        #     return atoms
         else:
             return Atoms.ase(
                 read(str(filename), format=format),

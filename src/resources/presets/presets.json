@@ -70,6 +70,11 @@
             "viewport_denoise": true,
             "wireframe": false
         },
+        "animation": {
+            "interpolation": "linear",
+            "interpolated_frames": 5,
+            "fps": 24
+        },
         "misc": {
             "render_window": true
         }
