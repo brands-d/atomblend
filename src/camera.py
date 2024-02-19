@@ -193,6 +193,29 @@ class Camera(Object):
         """
         return bpy.context.scene.camera == self.blender_object
 
+    @active.setter
+    def active(self, value):
+        """
+        Make a camera the active scene camera.
+
+        Note:
+            Only accepts TRUE. Can not make unassign camera as scene camera. Instead make a different camera active camera.
+
+        Args:
+            TRUE: Only TRUE allowed. Makes camera active camera.
+
+        Raises:
+            ValueError: Do not pass a FALSE value. See note.
+        """
+        if not value:
+            raise ValueError(
+                "Can not make camera inactive. Instead make a different camera active."
+            )
+
+        resolution = self.resolution
+        bpy.context.scene.camera = self.blender_object
+        self.resolution = resolution
+
     @property
     def engine(self):
         """
@@ -221,29 +244,6 @@ class Camera(Object):
             raise ValueError(f"Unknown render engine: {engine}.")
 
         self._engine = engine
-
-    @active.setter
-    def active(self, value):
-        """
-        Make a camera the active scene camera.
-
-        Note:
-            Only accepts TRUE. Can not make unassign camera as scene camera. Instead make a different camera active camera.
-
-        Args:
-            TRUE: Only TRUE allowed. Makes camera active camera.
-
-        Raises:
-            ValueError: Do not pass a FALSE value. See note.
-        """
-        if not value:
-            raise ValueError(
-                "Can not make camera inactive. Instead make a different camera active."
-            )
-
-        resolution = self.resolution
-        bpy.context.scene.camera = self.blender_object
-        self.resolution = resolution
 
     @property
     def quality(self):

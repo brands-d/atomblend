@@ -8,9 +8,13 @@
         "atoms": {
             "material": "standard",
             "size": 1,
-            "smooth": true,
-            "viewport_quality": 1,
-            "render_quality": 2
+            "quality": {
+                "segments": 16,
+                "rings": 8,
+                "smooth": true,
+                "viewport": 0,
+                "render": 2
+            }
         },
         "camera": {
             "quality": "high",

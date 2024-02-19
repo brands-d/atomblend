@@ -11,6 +11,7 @@ class Animation:
     def __init__(self):
         self.interpolation_type = Preset.get("animation.interpolation")
         self.fps = Preset.get("animation.fps")
+        self.current_frame = 1
 
     @property
     def interpolation_type(self):

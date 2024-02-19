@@ -11,6 +11,7 @@ from skimage.measure import marching_cubes as mc
 from .resources.units.units import *
 from .preset import Preset
 from .camera import Camera
+from .animation import Animation
 
 
 def reset(preset=None, keep_materials=False):
@@ -27,6 +28,7 @@ def reset(preset=None, keep_materials=False):
     remove_cameras()
     remove_meshes()
     remove_collections()
+    reset_frame()
     if not keep_materials:
         remove_materials()
 
@@ -45,6 +47,16 @@ def remove_cameras():
             bpy.data.objects.remove(object)
 
     Camera.first = True
+
+
+def reset_frame():
+    """
+    Resets the frame settings in Blender.
+    """
+    animation = Animation()
+    animation.current_frame = 1
+    animation.final_frame = 250
+    animation.initial_frame = 1
 
 
 def remove_materials():

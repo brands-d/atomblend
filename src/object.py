@@ -5,16 +5,7 @@ from mathutils import Euler, Vector
 
 class Object:
     """
-    A class representing an object in Blender.
-
-    Attributes:
-        blender_object (bpy.types.Object): The Blender object associated with this Object instance.
-
-    Methods:
-        make_active(): Makes the object active in the scene.
-        move(translation): Moves the object by the specified translation.
-        rotate(rotation, origin="local"): Rotates the object by the specified roation.
-        delete(): Deletes the object from the scene.
+    A class representing an object in Blender. Not intended to be instantiated directly by the user but it is an interface implemented by all objects inside the Blender scene and defines basic behavior common to all objects.
     """
 
     def __init__(self, object=None):
@@ -22,7 +13,7 @@ class Object:
         Initializes a new Object instance.
 
         Args:
-            object (bpy.types.Object, optional): The Blender object to associate with this Object instance.
+            object (bpy.types.Object | None): The Blender object to associate with this Object instance.
         """
         self._blender_object = object
 
@@ -58,8 +49,11 @@ class Object:
         """
         The location of the object.
 
+        Note:
+            Identical to the position property.
+
         Returns:
-            list: The location as a list of coordinates [x, y, z].
+            list: The location as a list of cartessian coordinates [x, y, z].
         """
         return list(self.blender_object.location)
 
@@ -69,7 +63,7 @@ class Object:
         Sets the location of the object.
 
         Args:
-            location (list): The new location as a list of coordinates [x, y, z].
+            location (list | tuple | ndarray | Vector): The new location as a list-like object of cartessian coordinates.
         """
         self.blender_object.location = Vector(location)
 
@@ -78,8 +72,11 @@ class Object:
         """
         The position of the object.
 
+        Note:
+            Identical to the location property.
+
         Returns:
-            list: The position as a list of coordinates [x, y, z].
+            list: The position as a list of cartessian coordinates [x, y, z].
         """
         return self.location
 
@@ -89,7 +86,7 @@ class Object:
         Sets the position of the object.
 
         Args:
-            position (list): The new position as a list of coordinates [x, y, z].
+            location (list | tuple | ndarray | Vector): The new location as a list-like object of cartessian coordinates.
         """
         self.location = Vector(position)
 
@@ -98,8 +95,11 @@ class Object:
         """
         The rotation of the object.
 
+        Note:
+            Rotation angles are identical to the ones used in the Blender interface.
+
         Returns:
-            list: The rotation as a list of angles [x, y, z] in degrees.
+            list: The rotation as a list of euler [x, y, z] in degrees.
         """
         return [degrees(angle) for angle in self.blender_object.rotation_euler]
 
@@ -109,7 +109,7 @@ class Object:
         Sets the rotation of the object.
 
         Args:
-            rotation (list): The new rotation as a list of angles [x, y, z] in degrees.
+            rotation (list | tuple | ndarray | Vector): The new rotation as a list of euler angles [x, y, z] in degrees.
         """
         self.blender_object.rotation_euler = Euler(
             [radians(angle) for angle in rotation], "XYZ"
@@ -138,10 +138,35 @@ class Object:
             if object.name == name and object.data is not None:
                 object.data.name = name
 
+    @property
     def active(self):
         """
-        Makes the object active in the scene.
+        Whether the object is active in the scene.
+
+        Returns:
+            bool: True if the object is active, False otherwise.
         """
+        return self.blender_object == bpy.context.view_layer.objects.active
+
+    @active.setter
+    def active(self, value):
+        """
+        Sets the object as active in the scene.
+
+        Note:
+            Only accepts TRUE. Can not make an object inactive. Instead, make a different object active.
+
+        Args:
+            TRUE: Only TRUE allowed.
+
+        Raises:
+            ValueError: Do not pass a FALSE value. See note.
+        """
+        if not value:
+            raise ValueError(
+                "Can not make object inactive. Instead make a different object active."
+            )
+
         bpy.ops.object.select_all(action="DESELECT")
         self.blender_object.select_set(True)
         bpy.context.view_layer.objects.active = self.blender_object
@@ -151,7 +176,7 @@ class Object:
         Moves the object by the specified translation.
 
         Args:
-            translation (list): The translation as a list of coordinates [x, y, z].
+            translation (list | tuple | ndarray | Vector): The translation as a list of coordinates [x, y, z].
         """
         self.location = Vector(self.blender_object.location) + Vector(translation)
 
@@ -160,15 +185,15 @@ class Object:
         Rotates the object by the specified rotation.
 
         Args:
-            rotation (list): The rotation as a list of angles [x, y, z] in degrees.
-            origin (str or tuple or list or Vector or Object or bpy.types.Object, optional):
+            rotation (list): The rotation as a list of euler angles [x, y, z] in degrees.
+            origin (str | tuple | list | ndarray | Vector | Object | bpy.types.Object):
                 The origin of the rotation. Defaults to "local".
                 Possible values:
-                - "local": Rotate around the object's local origin.
+                - "local": Rotate around the objects local origin.
                 - "cursor": Rotate around the 3D cursor.
-                - "global" or "world" or "origin": Rotate around the global origin (0, 0, 0).
+                - {"global", "world", "origin"}: Rotate around the global origin (0, 0, 0).
                 - (x, y, z): Rotate around the specified point.
-                - Object: Rotate around the location of the specified object.
+                - {Object bpy.data.Object}: Rotate around the location of the specified object.
         """
         if isinstance(origin, str) and origin == "local":
             bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY")
@@ -193,27 +218,48 @@ class Object:
             bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY")
             bpy.context.scene.cursor.location = previous_cursor_location
 
-    def insert_keyframe(self, property, value, frame):
+    def insert_keyframe(self, frame=None):
         """
-        Inserts a keyframe for the specified property at the specified frame.
+        Inserts a keyframe for the position and rotation of the object at frame.
 
         Args:
-            property (str): The name of the property to animate.
-            value (float): The value of the property at the keyframe.
-            frame (int): The frame at which to insert the keyframe.
+            frame (int | None): The frame to insert the keyframe. Defaults: None. If None, the current frame is used.
         """
-        if property in ("location", "position"):
-            self.location = value
-            self.blender_object.keyframe_insert(data_path="location", frame=frame)
-        elif property in ("rotation"):
-            self.rotation = value
-            self.blender_object.keyframe_insert(data_path="rotation_euler", frame=frame)
+        if frame is not None:
+            self.blender_object.keyframe_insert(
+                data_path="location", options=set(("INSERTKEY_NEEDED",)), frame=frame
+            )
+            self.blender_object.keyframe_insert(
+                data_path="rotation_euler",
+                options=set(("INSERTKEY_NEEDED",)),
+                frame=frame,
+            )
+        else:
+            self.blender_object.keyframe_insert(
+                data_path="location", options=set(("INSERTKEY_NEEDED",))
+            )
+            self.blender_object.keyframe_insert(
+                data_path="rotation_euler", options=set(("INSERTKEY_NEEDED",))
+            )
+
+    def remove_keyframe(self, frame=None):
+        """
+        Removes the keyframe for the position and rotation of the object at frame.
+
+        Args:
+            frame (int | None): The frame to remove the keyframe. Defaults: None. If None, the current frame is used.
+        """
+        if frame is not None:
+            self.blender_object.keyframe_delete(data_path="location", frame=frame)
+            self.blender_object.keyframe_delete(data_path="rotation_euler", frame=frame)
+        else:
+            self.blender_object.keyframe_delete(data_path="location")
+            self.blender_object.keyframe_delete(data_path="rotation_euler")
 
     def delete(self):
         """
         Deletes the object from the scene.
         """
-        a = 1
         if self.blender_object is not None:
             bpy.data.objects.remove(self.blender_object, do_unlink=True)
             self._blender_object = None

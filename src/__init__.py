@@ -14,5 +14,6 @@ from .material import Material
 from .object import Object
 from .plane import Plane
 from .preset import Preset
+from .animation import Animation
 
 __directory__ = Path(__file__)

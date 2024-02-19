@@ -16,8 +16,6 @@ from .object import Object
 from .periodic_table import PeriodicTable
 from .preset import Preset
 
-# from .animation import get_frame_range, set_frame_range
-
 
 class Atom(MeshObject):
     """
@@ -30,15 +28,15 @@ class Atom(MeshObject):
 
     _atoms = []
 
-    def __init__(self, element: str = "X") -> None:
+    def __init__(self, element="X"):
         """
         Initializes a new instance of the Atom class.
 
         The atom is created as a uv sphere with a radius based on the radius
-        defined in the :mod:`PeriodicTable`.
+        defined PeriodicTable.
 
         Args:
-            element (str, optional): The chemical symbol of the atom. Default: "X"
+            element (str): The chemical symbol of the atom. Default: "X".
 
         Examples:
             >>> # This will create a new atom hydrogen atom.
@@ -47,19 +45,19 @@ class Atom(MeshObject):
 
         radius = PeriodicTable[element].radius
         bpy.ops.mesh.primitive_uv_sphere_add(
-            radius=radius * Preset.get("atoms.size"), segments=16, ring_count=8
+            radius=radius * Atom._get_preset("size", element),
+            segments=Atom._get_preset("quality.segments", element),
+            ring_count=Atom._get_preset("quality.rings", element),
         )
         super().__init__()
 
-        self.blender_object.data.polygons.foreach_set(
-            "use_smooth",
-            [Preset.get("atoms.smooth")] * len(self.blender_object.data.polygons),
+        if Atom._get_preset("quality.smooth", element):
+            self.make_smooth()
+
+        self.subsurface_modifier(
+            Atom._get_preset("quality.viewport", element),
+            Atom._get_preset("quality.render", element),
         )
-        self.modifier = self.blender_object.modifiers.new(
-            name="Subsurface", type="SUBSURF"
-        )
-        self.modifier.levels = Preset.get("atoms.viewport_quality")
-        self.modifier.render_levels = Preset.get("atoms.render_quality")
 
         self.covalent_radius = PeriodicTable[element].covalent_radius
         self.element = element
@@ -67,10 +65,11 @@ class Atom(MeshObject):
         self.material = Material(
             f'{PeriodicTable[element].name} - {Preset.get("atoms.material")}'
         )
+        self.bonds = []
         Atom._atoms.append(self)
 
     @classmethod
-    def ase(cls, atom: "ase.Atom") -> "Atom":
+    def ase(cls, atom: "ase.Atom"):
         """
         Creates an Atom instance from an ASE Atom object.
 
@@ -95,7 +94,7 @@ class Atom(MeshObject):
         return self
 
     @classmethod
-    def get(cls, filter: Union[str, callable] = None) -> list["Atom"]:
+    def get(cls, filter=None):
         """
         Retrieves a list of atoms existing in the entire scene based on the
         specified filter.
@@ -110,7 +109,7 @@ class Atom(MeshObject):
             filters.
 
         Args:
-            filter (str | callable, optional): The filter to apply. Default: None.
+            filter (str | callable): The filter to apply. Default: None.
 
         Returns:
             list[Atom]: The list of atoms that match the filter.
@@ -143,7 +142,7 @@ class Atom(MeshObject):
             if atom.blender_object is None:
                 cls._atoms.remove(atom)
 
-    def __add__(self, other: Union["Atom", "Atoms"]) -> "Atoms":
+    def __add__(self, other):
         """
         Adds two atoms together to form a new `Atoms` object or will add the
         atom to an existing atoms object.
@@ -164,7 +163,7 @@ class Atom(MeshObject):
             other += self
             return other
 
-    def delete(self) -> None:
+    def delete(self):
         """
         Deletes the atom.
         """
@@ -172,13 +171,30 @@ class Atom(MeshObject):
         self._atoms.remove(self)
         super().delete()
 
+    @classmethod
+    def _get_preset(self, setting, element):
+        """
+        Retrieves the value of a specific property for a specific element. If not set uses global atoms setting.
+
+        Args:
+            setting (str): The property to retrieve.
+            element (str): The element symbol.
+
+        Returns:
+            any: The value of the property in the preset.
+        """
+        try:
+            return Preset.get(f"atoms.{element}.{setting}")
+        except KeyError:
+            return Preset.get(f"atoms.{setting}")
+
 
 class Atoms(MeshObject):
     """
-    Represents a collection of atoms in a 3D scene.
+    Represents a collection of atoms in a 3D scene. This could be a molecule or a surface.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name):
         """
         Initializes a new instance of the Atoms class.
 

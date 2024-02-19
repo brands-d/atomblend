@@ -4,17 +4,12 @@ from pathlib import Path
 
 class PeriodicTable:
     """
-    A class representing a periodic table.
-
-    Attributes:
-        elements_directory (Path): The directory path to the elements resource files.
-
-    Methods:
-        __init__(): Initializes an instance of the PeriodicTable class.
-        __getitem__(symbol): Retrieves an element from the periodic table by its symbol.
+    A class representing the periodic table. Mainly for internal use.
     """
 
     elements_directory = Path(__file__).parent / "resources" / "elements"
+    elements_file = elements_directory / "elements.json"
+    elements_user_file = elements_directory / f"elements_user.json"
 
     def __init__(self):
         """
@@ -43,15 +38,10 @@ class Element:
     A class representing an element in the periodic table.
 
     Attributes:
-        name (str): The name of the element.
-        symbol (str): The symbol of the element.
-        radius (float): The radius of the element.
-        covalent_radius (float): The covalent radius of the element.
-
-    Methods:
-        __init__(symbol): Initializes an instance of the Element class.
-        load(symbol): Loads the element data from the JSON file.
-        parse(data): Parses the element data and assigns the attributes.
+        name (str): The name of the element (i.e. Hydrogen).
+        symbol (str): The symbol of the element (i.e. H).
+        radius (float): The radius of the element in Angstrom. Default is half of the covalent radius.
+        covalent_radius (float): The covalent radius of the element in Angstrom. Source: https://en.wikipedia.org/wiki/Atomic_radius.
     """
 
     def __init__(self, symbol):
@@ -65,16 +55,16 @@ class Element:
 
     def load(self, symbol):
         """
-        Loads the element data from the JSON file.
+        Loads the element data from the JSON file(s). User file is preferred.
+
+        Note:
+            If unknown element is loaded, it will default to the element with dummy element called Veritasium with the symbol "X".
 
         Args:
             symbol (str): The symbol of the element.
 
         Returns:
             dict: The element data as a dictionary.
-
-        Raises:
-            KeyError: If the element data cannot be found.
         """
 
         def _load(path):
@@ -88,13 +78,13 @@ class Element:
             raise KeyError
 
         try:
-            return _load(PeriodicTable.elements_directory / f"elements_user.json")
+            return _load(PeriodicTable.elements_user_file)
         except KeyError:
             try:
-                return _load(PeriodicTable.elements_directory / f"elements.json")
+                return _load(PeriodicTable.elements_file)
             except KeyError:
                 symbol = "X"
-                return _load(PeriodicTable.elements_directory / f"elements.json")
+                return _load(PeriodicTable.elements_file)
 
     def parse(self, data):
         """

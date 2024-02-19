@@ -24,15 +24,21 @@ Notation:
             * property: (type), {list of options}
 
 Presets:
-   * atoms
-
-      * *element name*: (str), {carbon, hydrogen, ...}
+   * atoms 
  
-         * size: (int)
-         * material: (str), {basic, standard, eggshell, plastic, metallic, magnetics}
+      * size: (int)
+      * material: (str), {basic, standard, eggshell, plastic, metallic, magnetics}
+      * quality:
+
+         * segment: (int)
+         * rings: (int)
          * smooth: (bool)
          * viewport_quality: (int)
          * render_quality: (int)
+      
+      * *element name*: (str), {C, H, ...}
+         
+         * Specify global atoms properties here for specific elements
       
    * camera
       
