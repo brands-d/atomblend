@@ -89,7 +89,7 @@ Presets:
    * animation
 
       * interpolation: (str), {linear}
-      * interpolated_frames: (int)
+      * frame_multiplier: (int)
       * fps: (int)
 
    * misc

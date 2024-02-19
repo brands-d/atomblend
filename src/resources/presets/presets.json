@@ -103,7 +103,7 @@
         },
         "animation": {
             "interpolation": "linear",
-            "interpolated_frames": 5,
+            "frame_multiplier": 1,
             "fps": 24
         },
         "misc": {

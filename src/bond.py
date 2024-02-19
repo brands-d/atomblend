@@ -1,5 +1,5 @@
-import bpy
-from mathutils import Vector
+import bpy  # type:ignore
+from mathutils import Vector  # type:ignore
 from math import acos, atan2, degrees
 
 from .meshobject import MeshObject
@@ -63,10 +63,23 @@ class Bond(MeshObject):
 
     @property
     def material(self):
-        pass
+        """
+        Returns the material of the bond.
+
+        Returns:
+            Material: Material of the bond.
+        """
+        return self.material
 
     @material.setter
     def material(self, material):
+        """
+        Sets the material for the bond.
+
+        Args:
+            material (str | Material): Can either be a material directly or a string. String can either be the name of a material or "step". "step" will create a bond with the colors of the atoms it connects. Middle point is dependent on the covalent radius ratio between the atoms.
+        """
+
         if material in ("step",):
             material = Material(f"Bond - {material}")
             material.name = f"Bond - {self.name}"

@@ -15,6 +15,7 @@ from .meshobject import MeshObject
 from .object import Object
 from .periodic_table import PeriodicTable
 from .preset import Preset
+from .animation import Animation
 
 
 class Atom(MeshObject):
@@ -271,23 +272,23 @@ class Atoms(MeshObject):
         if filename.stem == "CHGCAR" or format in ("chgcar", "parchg"):
             atoms = VaspChargeDensity(str(filename)).atoms[-1]
             return Atoms.ase(atoms, name)
-        # elif (
-        #     filename.stem in ("XDATCAR")
-        #     or format == "vasp-xdatcar"
-        #     or filename.suffix == ".traj"
-        # ):
-        #     final_frame = -1
-        #     format = "traj" if filename.suffix == "traj" else "vasp-xdatcar"
-        #     for frame, aux in enumerate(read(str(filename), format=format, index=":")):
-        #         final_frame = frame
-        #         if frame == 0:
-        #             atoms = Atoms.ase(aux, name, exclude_bonds=exclude_bonds)
+        elif (
+            filename.stem in ("XDATCAR")
+            or format == "vasp-xdatcar"
+            or filename.suffix == ".traj"
+        ):
+            format = "traj" if filename.suffix == "traj" else "vasp-xdatcar"
+            for frame, aux in enumerate(read(str(filename), format=format, index=":")):
+                frame = frame * Preset.get("animation.frame_multiplier")
+                animation = Animation()
+                if frame == 0:
+                    atoms = Atoms.ase(aux, name)
 
-        #         atoms.insert_keyframe("location", aux.positions, frame)
+                animation.current_frame = frame
+                atoms.insert_keyframe(aux.positions)
 
-        #     if get_frame_range()[-1] < final_frame:
-        #         set_frame_range(get_frame_range()[0], frame)
-        #     return atoms
+            animation.final_frame = frame
+            return atoms
         else:
             return Atoms.ase(read(str(filename), format=format), name=name)
 
@@ -594,23 +595,21 @@ class Atoms(MeshObject):
                         )
                         self.copies.append(copy)
 
-    def insert_keyframe(self, property, values, frame, update_bonds=True):
+    def insert_keyframe(self, positions):
         """
         Inserts a keyframe for the specified property at the specified frame.
 
         Args:
-            property (str): The name of the property to animate.
-            values (float): The values of the property at the keyframe.
-            frame (int): The frame at which to insert the keyframe.
+            ase
         """
-        for atom, value in zip(self._atoms, values):
-            atom.insert_keyframe(property, value, frame)
 
-        if update_bonds:
-            for bond in self.bonds:
-                bond.update()
-                bond.insert_keyframe("location", bond.location, frame)
-                bond.insert_keyframe("rotation", bond.rotation, frame)
+        for atom, position in zip(self.atoms, positions):
+            atom.position = position
+            atom.insert_keyframe()
+
+        for bond in self.bonds:
+            bond.update()
+            bond.insert_keyframe()
 
     def _new_instance_to_scene(self, name):
         """
