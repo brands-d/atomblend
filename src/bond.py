@@ -104,6 +104,11 @@ class Bond(MeshObject):
         """
         Update the position, rotation, and scale of the bond based on the positions of the connected atoms.
         """
+        if not self._check_distance(self.atom_a, self.atom_b):
+            self.hide(True)
+        else:
+            self.hide(False)
+
         distance = Vector(self.atom_a.position) - Vector(self.atom_b.position)
         location = Vector(self.atom_a.position) - distance / 2
 
@@ -115,9 +120,55 @@ class Bond(MeshObject):
         )
         self.blender_object.scale[2] = distance.length / 2
 
+    @classmethod
+    def _check_distance(cls, atom_a, atom_b):
+        """
+        Check if the distance between two atoms is within the bonding threshold.
+
+        Args:
+            atom_a (Atom): The first atom.
+            atom_b (Atom): The second atom.
+
+        Returns:
+            bool: True if the distance is within the bonding threshold, False otherwise.
+        """
+        factor = Preset.get("bonds.factor")
+        position_a = Vector(atom_a.position)
+        position_b = Vector(atom_b.position)
+        radius_a = atom_a.covalent_radius
+        radius_b = atom_b.covalent_radius
+
+        return (position_a - position_b).length <= factor * (radius_a + radius_b)
+
+    def insert_keyframe(self, frame=None):
+        """
+        Inserts a keyframe for hiding the object in the viewport and render.
+
+        Args:
+            frame (int | None): The frame number to insert the keyframe. If not provided, the keyframe is inserted at the current frame.
+        """
+        if frame is not None:
+            self.blender_object.keyframe_insert(data_path="hide_viewport", frame=frame)
+            self.blender_object.keyframe_insert(data_path="hide_render", frame=frame)
+        else:
+            self.blender_object.keyframe_insert(data_path="hide_viewport")
+            self.blender_object.keyframe_insert(data_path="hide_render")
+
+        super().insert_keyframe(frame)
+
     def delete(self):
         """
         Removes itself from bond lists of atoms participating in bond.
         """
         self.atom_a.bonds.remove(self)
         self.atom_b.bonds.remove(self)
+
+    def hide(self, hide):
+        """
+        Hides the bond in the viewport and render.
+
+        Args:
+            hide (bool): True if the bond should be hidden, False otherwise.
+        """
+        self.blender_object.hide_viewport = hide
+        self.blender_object.hide_render = hide

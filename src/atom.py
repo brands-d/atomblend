@@ -552,13 +552,7 @@ class Atoms(MeshObject):
             atom_a (Atom): The first atom.
             atom_b (Atom): The second atom.
         """
-        factor = Preset.get("bonds.factor")
-        position_a = Vector(atom_a.position)
-        position_b = Vector(atom_b.position)
-        radius_a = atom_a.covalent_radius
-        radius_b = atom_b.covalent_radius
-
-        if (position_a - position_b).length <= factor * (radius_a + radius_b):
+        if Bond._check_distance(atom_a, atom_b):
             self += Bond(atom_a, atom_b)
 
     def repeat(self, repetitions):
