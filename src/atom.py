@@ -638,9 +638,29 @@ class _DummyAtom:
             atom (Atom): The original atom.
         """
         self.atom = atom
-        self.position = atom.position
         self.covalent_radius = atom.covalent_radius
+        self.position = atom.position
         self.name = atom.name
+
+    @property
+    def position(self):
+        """
+        Position of the atom.
+
+        Returns:
+            Vector: Position of the atom.
+        """
+        return Vector(self.atom.position) + Vector(self._shift)
+
+    @position.setter
+    def position(self, value):
+        """
+        Sets the position of the atom.
+
+        Args:
+            value (Vector): The new position of the atom.
+        """
+        self._shift = Vector(value) - Vector(self.atom.position)
 
     @property
     def material(self):
