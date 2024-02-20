@@ -4,7 +4,7 @@ from pathlib import Path
 
 import bpy  # type: ignore
 from ase.calculators.vasp import VaspChargeDensity
-from ase.io import read
+from ase.io import read as aread
 from mathutils import Vector  # type: ignore
 from numpy import diag, ndarray
 
@@ -277,8 +277,8 @@ class Atoms(MeshObject):
             or format == "vasp-xdatcar"
             or filename.suffix == ".traj"
         ):
-            format = "traj" if filename.suffix == "traj" else "vasp-xdatcar"
-            for frame, aux in enumerate(read(str(filename), format=format, index=":")):
+            format = "" if filename.suffix == ".traj" else "vasp-xdatcar"
+            for frame, aux in enumerate(aread(str(filename), format=format, index=":")):
                 frame = frame * Preset.get("animation.frame_multiplier")
                 animation = Animation()
                 if frame == 0:
@@ -290,7 +290,7 @@ class Atoms(MeshObject):
             animation.final_frame = frame
             return atoms
         else:
-            return Atoms.ase(read(str(filename), format=format), name=name)
+            return Atoms.ase(aread(str(filename), format=format), name=name)
 
     def __add__(self, objects):
         """
