@@ -41,3 +41,7 @@ Demo Files
 ~~~~~~~~~~
 
 Inside the ``blentom/demo/scripts`` you can find a couple of demo scripts that highlight certain features.
+
+Documentation
+~~~~~~~~~~~~~
+https://blentom.readthedocs.io/latest/index.html
