@@ -24,6 +24,12 @@ Notation:
             * property: (type), {list of options}
 
 Presets:
+   * isosurface
+
+      * remesh: (bool)
+      * voxel_size: (float)
+      * smooth: (bool)
+      
    * atoms 
  
       * size: (int)

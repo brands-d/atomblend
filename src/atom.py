@@ -64,7 +64,7 @@ class Atom(MeshObject):
         self.element = element
         self.name = element
         self.material = Material(
-            f'{PeriodicTable[element].name} - {Preset.get("atoms.material")}'
+            f'{PeriodicTable[element].name} - {Atom._get_preset("material",element)}'
         )
         self.bonds = []
         Atom._atoms.append(self)

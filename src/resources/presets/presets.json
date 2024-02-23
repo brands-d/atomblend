@@ -1,6 +1,9 @@
 {
     "default": {
         "isosurface": {
+            "remesh": true,
+            "voxel_size": 0.1,
+            "smooth": true,
             "chargedensity": {
                 "material": "standard"
             },

@@ -196,7 +196,7 @@ def set_wireframe(wireframe):
                     for space in area.spaces:
                         if space.type == "VIEW_3D":
                             space.overlay.wireframe_opacity = int(wireframe)
-                            space.overlay.show_wireframes = wireframe
+                            space.overlay.show_wireframes = True
 
 
 def marching_cubes_VASP(density, unit_cell, name, level=None):

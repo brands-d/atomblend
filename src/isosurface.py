@@ -27,12 +27,8 @@ class Isosurface(MeshObject):
         self._link()
         super().__init__()
 
-        remesh_modifier = self.blender_object.modifiers.new(
-            name="Remesh", type="REMESH"
-        )
-        remesh_modifier.mode = "VOXEL"
-        remesh_modifier.use_smooth_shade = True
-        remesh_modifier.voxel_size = 0.2
+        if Preset.get("isosurface.remesh"):
+            self.remesh()
 
     @classmethod
     def read(cls, filename, name=None, level=None, format=None):
@@ -60,7 +56,7 @@ class Isosurface(MeshObject):
 
         if format == ".cube":
             return Isosurface(CubeIsosurface(filename, name, level))
-        elif format.lower() in ("parchg", "chgcar", "vasp"):
+        elif format.lower() in ("parchg", "chgcar", "vasp", ".vasp"):
             return Isosurface(VaspIsosurface(filename, name, level))
         else:
             raise ValueError(f"Unsupported file format: {format}")
@@ -126,6 +122,17 @@ class Isosurface(MeshObject):
         """
         self._isosurface_object.blender_object.name = name
 
+    def remesh(self):
+        """
+        Remeshes the isosurface object.
+        """
+        remesh_modifier = self.blender_object.modifiers.new(
+            name="Remesh", type="REMESH"
+        )
+        remesh_modifier.mode = "VOXEL"
+        remesh_modifier.use_smooth_shade = Preset.get("isosurface.smooth")
+        remesh_modifier.voxel_size = Preset.get("isosurface.voxel_size")
+
     def repeat(self, repetitions):
         """
         Repeats the isosurface object.
@@ -142,10 +149,14 @@ class Isosurface(MeshObject):
         Updates the isosurface object.
         """
         name = self.name
+        material = self.material
         self._unlink()
         self.blender_object = self._isosurface_object._create_mesh()
         self._link()
         self.name = name
+        self.material = material
+        if Preset.get("isosurface.remesh"):
+            self.remesh()
 
     def _unlink(self):
         """
@@ -299,7 +310,7 @@ class ChargeDensity(Isosurface):
         Returns:
             Isosurface: The created Isosurface object.
         """
-        return Isosurface(*args, **kwargs)
+        return ChargeDensity(*args, **kwargs)
 
     @property
     def level(self):

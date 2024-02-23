@@ -91,7 +91,13 @@ class Material:
         Returns:
             tuple[float]: RGBA values between 0 and 1.
         """
-        return self.properties["Base Color"]
+        try:
+            return self.properties["Base Color"]
+        except KeyError:
+            try:
+                return self.properties["Color"]
+            except KeyError:
+                return (1, 1, 1, 1)
 
     @color.setter
     def color(self, color):
@@ -129,8 +135,12 @@ class Material:
         try:
             shader = self._material.node_tree.nodes["Principled BSDF"]
         except KeyError:
+            shader = None
             for node in self._material.node_tree.nodes:
                 if node.type == "BSDF_PRINCIPLED":
+                    shader = node
+                    break
+                elif node.type == "BSDF_GLOSSY":
                     shader = node
                     break
             if shader is None:
