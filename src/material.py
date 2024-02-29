@@ -181,6 +181,81 @@ class Material:
             except KeyError:
                 raise KeyError(f"Property {property} not found")
 
+    @property
+    def shader(self):
+        """
+        Get the shader node of the material.
+
+        Returns:
+            bpy.types.Node: The shader node.
+        """
+        try:
+            return self._material.node_tree.nodes["Principled BSDF"]
+        except KeyError:
+            for node in self._material.node_tree.nodes:
+                if node.type == "BSDF_PRINCIPLED":
+                    return node
+                elif node.type == "BSDF_GLOSSY":
+                    return node
+            return None
+
+    @property
+    def node_group(self):
+        """
+        Get nodes of a material as a node group with a shader output.
+
+        Note:
+            Only works for materials with nodes and ONE principled BSDF node or ONE glossy BSDF node.
+
+        Returns:
+            bpy.types.Node: The node group.
+
+        Raises:
+            RuntimeError: Material does not use nodes.
+        """
+        if not self.material.use_nodes:
+            raise RuntimeError("Material does not use nodes.")
+
+        group = bpy.data.node_groups.new(
+            name=f"{self.name} Group", type="ShaderNodeTree"
+        )
+        group_out = group.nodes.new(type="NodeGroupOutput")
+
+        node_mapping = {}
+
+        for node in self.material.node_tree.nodes:
+            if node.type != "OUTPUT_MATERIAL":
+                new_node = group.nodes.new(type=node.bl_idname)
+                if (
+                    node.bl_idname == "ShaderNodeBsdfPrincipled"
+                    or node.bl_idname == "ShaderNodeBsdfGlossy"
+                ):
+                    shader = node
+                new_node.name = node.name
+                for input in node.inputs:
+                    try:
+                        new_node.inputs[input.name].default_value = input.default_value
+                    except KeyError:
+                        pass
+                node_mapping[node] = new_node
+
+        for link in self.material.node_tree.links:
+            if link.to_node.type != "OUTPUT_MATERIAL":
+                from_node = node_mapping[link.from_node]
+                to_node = node_mapping[link.to_node]
+                from_socket = from_node.outputs[link.from_socket.name]
+                to_socket = to_node.inputs[link.to_socket.name]
+                group.links.new(from_socket, to_socket)
+
+        group.interface.new_socket(
+            name="Shader",
+            in_out="OUTPUT",
+            socket_type="NodeSocketShader",
+        )
+        group.links.new(node_mapping[shader].outputs["BSDF"], group_out.inputs[0])
+
+        return group
+
     def edit(self, property, value):
         """
         Edit a property of the material.

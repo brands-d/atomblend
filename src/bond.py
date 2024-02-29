@@ -83,16 +83,25 @@ class Bond(MeshObject):
         if material in ("step",):
             material = Material(f"Bond - {material}")
             material.name = f"Bond - {self.name}"
-            material.material.node_tree.nodes[3].color_ramp.elements[
-                1
-            ].color = self.atom_a.material.color
-            material.material.node_tree.nodes[3].color_ramp.elements[
-                0
-            ].color = self.atom_b.material.color
+            mix_shader_node = material.material.node_tree.nodes["Mix Shader"]
+            color_ramp_node = material.material.node_tree.nodes["Color Ramp"]
+            atom_a_group = material.material.node_tree.nodes.new("ShaderNodeGroup")
+            atom_b_group = material.material.node_tree.nodes.new("ShaderNodeGroup")
+            atom_a_group.node_tree = self.atom_a.material.node_group
+            atom_b_group.node_tree = self.atom_b.material.node_group
+
+            material.material.node_tree.links.new(
+                atom_a_group.outputs["Shader"],
+                mix_shader_node.inputs[2],
+            )
+            material.material.node_tree.links.new(
+                atom_b_group.outputs["Shader"],
+                mix_shader_node.inputs[1],
+            )
             ratio = self.atom_b.covalent_radius / (
                 self.atom_a.covalent_radius + self.atom_b.covalent_radius
             )
-            material.material.node_tree.nodes[3].color_ramp.elements[1].position = ratio
+            color_ramp_node.color_ramp.elements[1].position = ratio
         elif isinstance(material, Material):
             pass
         else:

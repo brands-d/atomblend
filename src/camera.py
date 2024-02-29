@@ -323,7 +323,6 @@ class Camera(Object):
 
             # Reset render engine
             set_viewport_engine(viewport_engine)
-            set_background_transparent(False)
 
         return wrapper
 
