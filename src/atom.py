@@ -524,7 +524,10 @@ class Atoms(MeshObject):
             periodic = False
 
         for atom_a, atom_b in combinations(self.get("all"), 2):
-            if [atom_a.element, atom_b.element] in exclude_bonds:
+            if [atom_a.element, atom_b.element] in exclude_bonds or [
+                atom_b.element,
+                atom_a.element,
+            ] in exclude_bonds:
                 continue
 
             if periodic:

@@ -18,13 +18,31 @@
         }
     },
     "Mearini2024": {
-        "blender": {
-            "viewport_engine": "cycles"
-        },
         "atoms": {
+            "material": "Mearini2024",
             "Ag": {
                 "material": "metallic"
             }
+        },
+        "bonds": {
+            "no_bonds": [
+                [
+                    "Ag",
+                    "Ag"
+                ],
+                [
+                    "Co",
+                    "Ag"
+                ],
+                [
+                    "Fe",
+                    "Ag"
+                ],
+                [
+                    "Ni",
+                    "Ag"
+                ]
+            ]
         }
     }
 }

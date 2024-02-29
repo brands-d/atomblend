@@ -222,13 +222,14 @@ class Material:
         group_out = group.nodes.new(type="NodeGroupOutput")
 
         node_mapping = {}
-
+        shader = None
         for node in self.material.node_tree.nodes:
             if node.type != "OUTPUT_MATERIAL":
                 new_node = group.nodes.new(type=node.bl_idname)
-                if (
-                    node.bl_idname == "ShaderNodeBsdfPrincipled"
-                    or node.bl_idname == "ShaderNodeBsdfGlossy"
+                if node.bl_idname in (
+                    "ShaderNodeBsdfPrincipled",
+                    "ShaderNodeBsdfGlossy",
+                    "ShaderNodeBsdfAnisotropic",
                 ):
                     shader = node
                 new_node.name = node.name
