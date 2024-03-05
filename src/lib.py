@@ -5,6 +5,7 @@ import bpy
 import bmesh
 from mathutils import Vector
 
+from numpy import prod, dot, cross
 from ase.io.cube import read_cube_data
 from skimage.measure import marching_cubes as mc
 
@@ -213,9 +214,7 @@ def marching_cubes_VASP(density, unit_cell, name, level=None):
     - object: The generated mesh object.
     """
     vertices, faces, *_ = mc(density, level=level)
-    vertices = [
-        _vertex_transform(vertex, unit_cell, density.shape) for vertex in vertices
-    ]
+    vertices = dot((vertices - 1), unit_cell) / density.shape
     edges = [[face[i], face[(i + 1) % 3]] for face in faces for i in range(3)]
 
     mesh = bpy.data.meshes.new(name=name)
@@ -253,6 +252,9 @@ def marching_cubes_gaussian(density, origin, axes, name, level=None):
 
 def _vertex_transform(vertex, unit_cell, shape):
     """
+    Warning:
+        OBSOLETE
+
     Transforms a vertex coordinate based on the unit cell dimensions and shape of the density data.
 
     Parameters:
