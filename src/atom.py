@@ -374,7 +374,8 @@ class Atoms(MeshObject):
             cell (ndarray or list or tuple or Vector): The unit cell of the atoms collection.
         """
         if isinstance(cell[0], (ndarray, tuple, Vector, list)):
-            self._unit_cell = cell
+            if not (cell == 0).all():
+                self._unit_cell = cell
         else:
             self._unit_cell = diag(cell)
 
