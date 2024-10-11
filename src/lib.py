@@ -150,7 +150,7 @@ def set_viewport_max_samples(samples):
     """
     if bpy.context.scene.render.engine == "CYCLES":
         bpy.data.scenes["Scene"].cycles.preview_samples = samples
-    elif bpy.context.scene.render.engine == "BLENDER_EEVEE":
+    elif bpy.context.scene.render.engine in ("BLENDER_EEVEE", "BLENDER_EEVEE_NEW"):
         bpy.data.scenes["Scene"].eevee.taa_samples = samples
 
 
@@ -178,7 +178,10 @@ def set_viewport_engine(engine):
     if engine == "cycles":
         bpy.context.scene.render.engine = "CYCLES"
     elif engine == "eevee":
-        bpy.context.scene.render.engine = "BLENDER_EEVEE"
+        try:
+            bpy.context.scene.render.engine = "BLENDER_EEVEE"
+        except:
+            bpy.context.scene.render.engine = "BLENDER_EEVEE_NEW"
     else:
         raise ValueError(f"Unknown render engine: {engine}")
 
